@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page_mode == "portfolio" %}组合终端{% else %}新闻驱动选股系统{% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-mark">NS</div>
+          <div>
+            <div class="eyebrow">Local Research Console</div>
+            <h1 class="app-title">新闻驱动选股系统</h1>
+          </div>
+        </div>
+
+        <div class="sidebar-panel">
+          <p class="panel-label">运行模式</p>
+          <div class="sidebar-badges">
+            <span>本地部署</span>
+            <span>盘中 + 日度双节奏</span>
+            <span>A股 + 港股</span>
+          </div>
+          <p class="sidebar-note">当前前台优先服务个人本地使用，不强调营销展示，而是强调可持续操作与回放。</p>
+        </div>
+
+        <div class="sidebar-panel">
+          <p class="panel-label">快速操作</p>
+          <div class="action-stack">
+            <a href="/" class="ghost action-link">研究工作台</a>
+            <a href="/portfolio" class="ghost action-link">组合终端</a>
+            <button id="load-demo" type="button" class="primary">载入示例观察池</button>
+            <button id="generate-demo" type="button" class="ghost">立即生成一次</button>
+            <button id="refresh-data" type="button" class="ghost">更新最近交易日数据</button>
+            <button id="save-settings" type="button" class="ghost">保存数据源与模型配置</button>
+            <button id="refresh-history" type="button" class="ghost">刷新历史记录</button>
+            <button id="export-markdown" type="button" class="ghost">导出 Markdown</button>
+            <button id="export-json" type="button" class="ghost">导出 JSON</button>
+          </div>
+        </div>
+
+        <div class="sidebar-panel">
+          <div class="panel-head">
+            <p class="panel-label">本地历史</p>
+            <div class="panel-head-actions">
+              <span id="history-count" class="mini-pill">0 runs</span>
+              <button id="clear-history" type="button" class="ghost small-button">清空</button>
+            </div>
+          </div>
+          <div class="history-filters">
+            <label class="field">
+              <span>视角</span>
+              <select id="history-mode-input">
+                <option value="run">按运行</option>
+                <option value="event">按事件</option>
+                <option value="company">按公司</option>
+                <option value="date">按日期</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>关键词</span>
+              <input id="history-search-input" type="text" placeholder="事件 / 标的关键词">
+            </label>
+            <div class="two-col-grid">
+              <label class="field">
+                <span>开始日期</span>
+                <input id="history-date-from-input" type="date">
+              </label>
+              <label class="field">
+                <span>结束日期</span>
+                <input id="history-date-to-input" type="date">
+              </label>
+            </div>
+          </div>
+          <div id="history-list" class="history-list">
+            <div class="history-empty">还没有本地运行记录。</div>
+          </div>
+        </div>
+
+        <div class="sidebar-panel">
+          <p class="panel-label">系统说明</p>
+          <div class="meta-list">
+            <div>
+              <span>合规边界</span>
+              <strong>{{ overview.compliance_boundary }}</strong>
+            </div>
+            <div>
+              <span>数据面</span>
+              <strong>{{ overview.inputs|length }} 类输入 / {{ overview.outputs|length }} 类输出</strong>
+            </div>
+            <div>
+              <span>内部实验</span>
+              <strong>{{ lab_snapshot.note }}</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-stage">
+        <header class="stage-header">
+          <div>
+            <div class="eyebrow">Workspace</div>
+            <h2>{% if page_mode == "portfolio" %}组合终端{% else %}本地研究工作台{% endif %}</h2>
+            <p class="stage-copy">
+              {% if page_mode == "portfolio" %}
+              聚合仓位建议、风险预算、主题暴露、组合回放和组合版本对比，优先服务组合层决策。
+              {% else %}
+              先配置你自己的 RSS 和模型，再导入观察池、主题偏好和研究笔记，系统会在本地生成热点事件、产业链映射和个股建议。
+              {% endif %}
+            </p>
+            <div class="runtime-strip">
+              <div class="runtime-card runtime-card-action">
+                <span>数据刷新</span>
+                <button id="refresh-data-inline" type="button" class="primary runtime-action-button">刷新数据</button>
+                <p class="inline-note">同时刷新股票数据和新闻数据。</p>
+              </div>
+              <div class="runtime-card">
+                <span>股价数据截止日</span>
+                <strong id="runtime-stock-as-of">载入中...</strong>
+                <p id="runtime-stock-note" class="inline-note">载入中...</p>
+              </div>
+              <div class="runtime-card">
+                <span>新闻数据截止日</span>
+                <strong id="runtime-news-as-of">载入中...</strong>
+                <p id="runtime-news-note" class="inline-note">载入中...</p>
+              </div>
+              <div class="runtime-card">
+                <span>最近生成 / 历史数量</span>
+                <strong id="runtime-latest-generated">载入中...</strong>
+                <p id="runtime-history-count" class="inline-note">载入中...</p>
+              </div>
+              <div class="runtime-card runtime-card-wide">
+                <span>数据库</span>
+                <strong id="runtime-database-path">载入中...</strong>
+                <p class="inline-note">本地 SQLite 历史库路径，仅用于研究记录与回放。</p>
+              </div>
+            </div>
+          </div>
+          <div class="stage-summary">
+            <div class="summary-card">
+              <span>最新事件</span>
+              <strong id="runtime-top-event">载入中...</strong>
+              <p id="runtime-top-event-note" class="summary-note">等待工作台或历史状态。</p>
+            </div>
+            <div class="summary-card">
+              <span>领先建议</span>
+              <strong id="runtime-top-recommendation">载入中...</strong>
+              <p id="runtime-top-recommendation-note" class="summary-note">等待工作台或历史状态。</p>
+            </div>
+            <div class="summary-card">
+              <span>历史版本</span>
+              <strong id="runtime-history-summary">载入中...</strong>
+              <p id="runtime-history-summary-note" class="summary-note">等待工作台或历史状态。</p>
+            </div>
+          </div>
+        </header>
+
+        <section class="rss-preview-shell">
+          <div class="workspace-head">
+            <div class="section-head">
+              <p>新闻速览</p>
+              <h3>RSS 推送标题</h3>
+            </div>
+            <div class="workspace-badges">
+              <span>刷新后可看</span>
+              <span>支持原文</span>
+            </div>
+          </div>
+          <div id="runtime-rss-list" class="runtime-rss-list">
+            <div class="history-empty">刷新数据后，这里会显示最新 RSS 推送标题。</div>
+          </div>
+        </section>
+
+        <section class="workspace-card">
+          <div class="workspace-head">
+            <div class="section-head">
+              <p>输出视图</p>
+              <h3>热点、事件、产业链、建议与回放</h3>
+            </div>
+            <div class="workspace-badges">
+              <span>热点总览</span>
+              <span>事件推演</span>
+              <span>产业链</span>
+              <span>建议卡</span>
+              <span>历史回放</span>
+            </div>
+          </div>
+          <div id="workspace-root" class="workspace-root">
+            <div class="empty-state">
+              <p>导入观察池后，这里会生成完整的本地研究视图。</p>
+              <ul>
+                <li>热点事件流</li>
+                <li>事件详情与失效条件</li>
+                <li>产业链分析</li>
+                <li>候选股票池</li>
+                <li>个股建议与历史版本</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <details class="config-shell">
+          <summary class="config-summary">展开或收起配置面板</summary>
+          <section class="control-grid">
+            <section class="control-card">
+              <div class="section-head">
+                <p>数据源设置</p>
+                <h3>自定义 RSS</h3>
+              </div>
+              <label class="field">
+                <span>RSS 源列表</span>
+                <textarea id="rss-sources-input" rows="6" placeholder="每行一条：URL | 名称 | 区域 | 市场&#10;https://example.com/rss | 我的宏观源 | 全球 | A股+港股"></textarea>
+              </label>
+              <p class="inline-note rss-spec">
+                格式规范：每行一个 RSS 源，使用 <code>|</code> 分隔，推荐格式为
+                <code>URL | 名称 | 区域 | 市场</code>。
+                例如：
+                <code>https://example.com/rss | 我的宏观源 | 全球 | A股+港股</code>。
+                URL 必须以 <code>http://</code> 或 <code>https://</code> 开头；
+                <code>|</code> 两侧可以有空格，系统会自动去掉；
+                名称、区域、市场可以留空；空行会自动忽略；一行只写一个 RSS 地址。
+              </p>
+              <label class="field checkbox-row">
+                <input id="live-news-input" type="checkbox">
+                <span>生成时优先抓取真实 RSS，失败自动回退到演示源</span>
+              </label>
+              <div class="two-col-grid">
+                <label class="field">
+                  <span>技术确认 Provider</span>
+                  <select id="technical-provider-input">
+                    <option value="mock">mock</option>
+                    <option value="akshare">akshare</option>
+                    <option value="tradingview-mcp">tradingview-mcp</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Bridge Endpoint</span>
+                  <input id="technical-endpoint-input" type="text" placeholder="可选，未来用于 tradingview-mcp bridge">
+                </label>
+              </div>
+              <div class="provider-status-card">
+                <span>当前技术确认状态</span>
+                <strong id="technical-provider-status">mock / idle</strong>
+                <p id="technical-provider-note" class="inline-note">保存设置或生成后，这里会显示当前 provider 与回退状态。</p>
+              </div>
+              <p class="inline-note">适合把你自己常用的行业资讯、宏观快讯、公司 RSS 都接进来。</p>
+            </section>
+
+            <section class="control-card">
+              <div class="section-head">
+                <p>模型设置</p>
+                <h3>自带大模型 API</h3>
+              </div>
+              <div class="two-col-grid">
+                <label class="field">
+                  <span>Provider</span>
+                  <select id="model-provider-input">
+                    <option value="openai-compatible">openai-compatible</option>
+                    <option value="codex-cli">codex-cli</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>模型名</span>
+                  <input id="model-name-input" type="text" placeholder="gpt-4.1-mini">
+                </label>
+              </div>
+              <label class="field">
+                <span>Base URL</span>
+                <input id="model-base-url-input" type="text" placeholder="https://api.openai.com/v1">
+              </label>
+              <label class="field">
+                <span>API Key</span>
+                <input id="model-api-key-input" type="password" placeholder="留空则沿用已保存 key">
+              </label>
+              <label class="field">
+                <span>AI 超时（秒）</span>
+                <input id="model-timeout-input" type="number" min="10" max="600" step="10" value="20">
+              </label>
+              <label class="field">
+                <span>系统提示词</span>
+                <textarea id="model-system-prompt-input" rows="4" placeholder="可选，留空则使用默认财经润色提示词"></textarea>
+              </label>
+              <label class="field checkbox-row">
+                <input id="model-enabled-input" type="checkbox">
+                <span>生成时启用模型增强事件摘要与建议逻辑</span>
+              </label>
+            </section>
+
+            <section class="control-card control-card-wide">
+              <div class="section-head">
+                <p>观察池输入</p>
+                <h3>观察池、主题与风控阈值</h3>
+              </div>
+              <form id="research-form">
+                <label class="field">
+                  <span>自选股 / 持仓</span>
+                  <textarea id="watchlist-input" rows="8" placeholder="每行一条：代码 名称 仓位% 研究论点&#10;300308 中际旭创 8 海外算力资本开支是否延续&#10;00981.HK 中芯国际-H 6 把它作为设备链景气锚点"></textarea>
+                </label>
+                <label class="field">
+                  <span>关注行业 / 主题</span>
+                  <textarea id="topics-input" rows="3" placeholder="用逗号或换行分隔：AI算力，国产替代，航运，储能"></textarea>
+                </label>
+                <div class="three-col-grid">
+                  <label class="field">
+                    <span>单名仓位阈值 %</span>
+                    <input id="single-limit-input" type="number" min="1" step="1" value="15">
+                  </label>
+                  <label class="field">
+                    <span>板块暴露阈值 %</span>
+                    <input id="sector-limit-input" type="number" min="1" step="1" value="22">
+                  </label>
+                  <label class="field">
+                    <span>负面事件提醒阈值</span>
+                    <input id="negative-threshold-input" type="number" min="1" max="100" step="1" value="72">
+                  </label>
+                </div>
+                <label class="field">
+                  <span>个人研究笔记</span>
+                  <textarea id="notes-input" rows="5" placeholder="写下你最在意的验证点、退出条件和反证线索。"></textarea>
+                </label>
+                <div class="form-actions">
+                  <button type="submit" class="primary">生成本地工作台</button>
+                  <p id="settings-status" class="inline-note">先保存配置，再开始本地生成。</p>
+                </div>
+              </form>
+            </section>
+          </section>
+        </details>
+      </main>
+    </div>
+
+    <script>
+      window.__APP_BOOTSTRAP__ = {
+        overview: {{ overview|tojson }},
+        demoRequest: {{ demo_request|tojson }},
+        formDefaults: {{ form_defaults|tojson }},
+        demoWorkspace: {{ demo_workspace|tojson }},
+        userSettings: {{ user_settings|tojson }},
+        labSnapshot: {{ lab_snapshot|tojson }},
+        pageMode: {{ page_mode|tojson }}
+      };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </body>
+</html>

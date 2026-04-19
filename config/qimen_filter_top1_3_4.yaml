@@ -1,0 +1,25 @@
+qlib_provider_uri: D:\Github_Program\qlib_data\qlib_format
+parquet_path: D:\Github_Program\qlib_data\daily_pv_akshare.parquet
+industry_mapping_path: D:\Github_Program\qlib_data\industry_mapping_sw_l1.json
+industry_palace_map_path: config/industry_palace_map.json
+artifacts_dir: artifacts
+universe: filtered
+start_date: 2016-01-01
+end_date: 2025-12-31
+rebalance_every: 5
+hold_days: 5
+cost_bps: 30
+top_pct: 0.10
+qimen_time: "15:00"
+qimen_pan_method: chaibu
+qimen_top_palaces: 2
+qimen_weighting: industry
+qimen_filter_metric: top1
+qimen_filter_allowed_bins: [3, 4]
+qimen_filter_train_end: 2022-12-31
+qimen_filter_bin_count: 5
+csi300_symbol: "000300"
+initial_capital: 1000000
+limit_move_threshold: 0.095
+lookback_days: 40
+

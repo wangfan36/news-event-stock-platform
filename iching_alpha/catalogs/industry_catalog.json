@@ -1,0 +1,186 @@
+{
+  "ai_optics": {
+    "name": "AI 光模块与交换链",
+    "description": "海外云厂商 capex 驱动的高速光模块、交换机和连接器链条。",
+    "current_state": "订单景气仍高，但市场开始区分真实上量与提前备货。",
+    "policy_dependency": "主要受海外云厂商资本开支影响，对国内政策依赖有限。",
+    "import_export_dependency": "出口占比较高，海外需求波动会直接传导到交付节奏。",
+    "structural_notes": [
+      "高速光模块是利润中心，龙头集中度最高。",
+      "上游光芯片仍有海外技术约束，国产替代在推进中。"
+    ],
+    "supply_chain": [
+      {
+        "node_id": "optical_chip",
+        "name": "光芯片 / DSP",
+        "stage": "上游",
+        "concentration": "海外技术集中度高，国产突破仍在爬坡。",
+        "value_contribution": "约占方案价值的 25%-35%。",
+        "profit_level": "毛利率较高，但受技术代际切换影响大。",
+        "demand_state": "受云厂商升级节奏驱动，景气维持高位。",
+        "dependency_note": "海外供给和关键 IP 约束明显。",
+        "representative_companies": ["300502", "300394", "00981.HK"]
+      },
+      {
+        "node_id": "optical_module",
+        "name": "高速光模块",
+        "stage": "中游",
+        "concentration": "龙头集中度高。",
+        "value_contribution": "约占方案价值的 35%-45%。",
+        "profit_level": "景气向上时利润弹性最大。",
+        "demand_state": "当前是最直接的订单承接环节。",
+        "dependency_note": "受交付能力、海外认证和良率影响。",
+        "representative_companies": ["300308", "300502", "002281"]
+      },
+      {
+        "node_id": "switch_interconnect",
+        "name": "交换机 / 连接器",
+        "stage": "下游配套",
+        "concentration": "交换机格局稳固，连接器细分环节分散。",
+        "value_contribution": "约占方案价值的 15%-25%。",
+        "profit_level": "交换机利润稳定，连接器利润弹性更高。",
+        "demand_state": "随着 cluster 扩容同步抬升。",
+        "dependency_note": "交付节奏跟随整体网络升级。",
+        "representative_companies": ["000063", "603083", "300570", "601138"]
+      }
+    ]
+  },
+  "semi_equipment": {
+    "name": "半导体设备与国产替代",
+    "description": "设备、零部件、晶圆厂共同构成的国产替代链条。",
+    "current_state": "政策支持增强，但订单兑现仍要看晶圆厂 capex 与验证节奏。",
+    "policy_dependency": "对设备更新、贴息和国产替代政策敏感。",
+    "import_export_dependency": "关键零部件仍有进口依赖。",
+    "structural_notes": [
+      "设备龙头集中度高，零部件弹性更强但兑现更慢。",
+      "晶圆厂是景气锚点，不是设备链利润中心。"
+    ],
+    "supply_chain": [
+      {
+        "node_id": "wafer_fab_equipment",
+        "name": "刻蚀 / 薄膜 / 清洗设备",
+        "stage": "中游核心",
+        "concentration": "龙头集中，订单向头部聚集。",
+        "value_contribution": "约占全链价值的 40%-50%。",
+        "profit_level": "利润率较高，取决于产品验证进度。",
+        "demand_state": "政策刺激下预期改善，兑现仍要看扩产。",
+        "dependency_note": "验证周期长，受晶圆厂资本开支影响大。",
+        "representative_companies": ["002371", "688012", "688072", "688981"]
+      },
+      {
+        "node_id": "semi_parts",
+        "name": "零部件",
+        "stage": "上游",
+        "concentration": "细分分散，但国产替代空间大。",
+        "value_contribution": "约占全链价值的 15%-20%。",
+        "profit_level": "批量导入后弹性明显。",
+        "demand_state": "跟随设备订单释放。",
+        "dependency_note": "依赖头部设备厂验证通过。",
+        "representative_companies": ["688012", "300604", "002371"]
+      },
+      {
+        "node_id": "wafer_fab",
+        "name": "晶圆厂",
+        "stage": "下游需求方",
+        "concentration": "资本开支集中于头部晶圆厂。",
+        "value_contribution": "决定订单持续性，不是设备链利润中心。",
+        "profit_level": "利润率随景气波动较大。",
+        "demand_state": "先进制程和成熟制程分化明显。",
+        "dependency_note": "投资节奏决定设备链订单兑现速度。",
+        "representative_companies": ["688981", "00981.HK", "688120"]
+      }
+    ]
+  },
+  "energy_storage": {
+    "name": "储能电池与系统集成",
+    "description": "由并网、招标和出海需求驱动的储能链。",
+    "current_state": "招标节奏回升，市场关注从叙事转向订单兑现与利润弹性。",
+    "policy_dependency": "高度依赖并网政策、电价机制和地方示范项目推进。",
+    "import_export_dependency": "出海比例高，欧美储能政策与贸易环境重要。",
+    "structural_notes": [
+      "电芯和系统集成是价值贡献最高的环节。",
+      "PCS/BMS 集中度高但利润弹性低于电芯。"
+    ],
+    "supply_chain": [
+      {
+        "node_id": "battery_cell",
+        "name": "储能电芯",
+        "stage": "中游核心",
+        "concentration": "龙头主导，二线厂商依赖价格策略抢份额。",
+        "value_contribution": "约占方案价值的 35%-45%。",
+        "profit_level": "规模效应显著，毛利率受锂价影响。",
+        "demand_state": "国内示范项目和海外订单共同拉动。",
+        "dependency_note": "锂价和招标节奏是关键变量。",
+        "representative_companies": ["300750", "300014"]
+      },
+      {
+        "node_id": "pcs_bms",
+        "name": "PCS / BMS",
+        "stage": "配套环节",
+        "concentration": "逆变器与 BMS 龙头集中度较高。",
+        "value_contribution": "约占方案价值的 15%-20%。",
+        "profit_level": "利润率稳定但弹性较弱。",
+        "demand_state": "跟随系统集成同步确认。",
+        "dependency_note": "项目并网和认证周期影响较大。",
+        "representative_companies": ["300827", "688390", "300274"]
+      },
+      {
+        "node_id": "system_integration",
+        "name": "系统集成 / 电站交付",
+        "stage": "下游交付",
+        "concentration": "项目制特征明显，区域玩家较多。",
+        "value_contribution": "约占方案价值的 25%-35%。",
+        "profit_level": "净利率较低，但订单能见度强时弹性可观。",
+        "demand_state": "审批与招标恢复后最先体现。",
+        "dependency_note": "现金流和项目回款很关键。",
+        "representative_companies": ["300693", "600406", "300274"]
+      }
+    ]
+  },
+  "shipping_energy": {
+    "name": "油运与能源航运",
+    "description": "地缘冲突、原油贸易流重构和运价波动共同驱动。",
+    "current_state": "绕航与贸易流重构抬升运价，但市场担心持续性。",
+    "policy_dependency": "受国际航运政策影响，但核心仍是地缘与供需。",
+    "import_export_dependency": "国际贸易链条依赖度极高。",
+    "structural_notes": [
+      "船东利润弹性最大，船舶制造的兑现更滞后。",
+      "上游油气资源更偏防御，不等于运价弹性。"
+    ],
+    "supply_chain": [
+      {
+        "node_id": "tanker_operator",
+        "name": "油运船东",
+        "stage": "核心运营",
+        "concentration": "头部船东集中度提升。",
+        "value_contribution": "约占全链利润兑现的 45%-55%。",
+        "profit_level": "利润弹性极高。",
+        "demand_state": "地缘冲突和贸易改道驱动运价抬升。",
+        "dependency_note": "对运价和船舶供给极其敏感。",
+        "representative_companies": ["600026", "601975", "601872", "01138.HK"]
+      },
+      {
+        "node_id": "oil_major",
+        "name": "上游油气资源",
+        "stage": "上游资源",
+        "concentration": "三桶油与国际巨头集中。",
+        "value_contribution": "受益于油价和销量，不等同于运价弹性。",
+        "profit_level": "现金流强，分红稳定。",
+        "demand_state": "油价高位时提供安全垫。",
+        "dependency_note": "地缘与 OPEC 政策是主变量。",
+        "representative_companies": ["600938", "00883.HK"]
+      },
+      {
+        "node_id": "shipyard",
+        "name": "船舶制造",
+        "stage": "上游供给",
+        "concentration": "大型船厂集中，订单周期长。",
+        "value_contribution": "兑现慢于运价，但受造船景气驱动。",
+        "profit_level": "利润率中等。",
+        "demand_state": "运价高位会带动新船订单。",
+        "dependency_note": "交付周期长，适合中期观察。",
+        "representative_companies": ["600150", "00317.HK"]
+      }
+    ]
+  }
+}

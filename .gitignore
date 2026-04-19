@@ -1,0 +1,12 @@
+__pycache__/
+.pytest_cache/
+.omx/
+artifacts/
+dist/
+.venv/
+*.pyc
+*.pyo
+*.zip
+.env
+.data/
+*.log
