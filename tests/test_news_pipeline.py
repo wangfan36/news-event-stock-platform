@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from iching_alpha.news_pipeline import (
+from news_alpha.news_pipeline import (
     deduplicate_and_cluster_news,
     load_demo_raw_news_feed,
     summarize_clusters,

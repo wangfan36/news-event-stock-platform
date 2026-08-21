@@ -1,7 +1,7 @@
 from datetime import date
 
-from iching_alpha.research_os import ResearchRequest, build_research_workspace, default_demo_request
-from iching_alpha.storage import get_symbol_history, get_workspace_run, list_workspace_runs, persist_workspace
+from news_alpha.research_os import ResearchRequest, build_research_workspace, default_demo_request
+from news_alpha.storage import get_symbol_history, get_workspace_run, list_workspace_runs, persist_workspace
 
 
 def test_workspace_can_be_persisted_and_loaded(tmp_path) -> None:

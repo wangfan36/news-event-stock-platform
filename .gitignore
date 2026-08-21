@@ -1,12 +1,28 @@
+# Python
 __pycache__/
+*.py[cod]
+*.egg-info/
 .pytest_cache/
-.omx/
-artifacts/
+.ruff_cache/
+.coverage
+htmlcov/
 dist/
+build/
 .venv/
-*.pyc
-*.pyo
-*.zip
+venv/
+
+# Local runtime data and secrets
 .env
-.data/
+.env.*
+!.env.example
+config/local.yaml
+artifacts/
+*.db
+*.sqlite*
 *.log
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

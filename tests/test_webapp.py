@@ -1,5 +1,5 @@
-from iching_alpha.research_os import default_demo_request
-from iching_alpha.webapp import create_app
+from news_alpha.research_os import default_demo_request
+from news_alpha.webapp import create_app
 
 
 def test_homepage_renders_core_positioning() -> None:

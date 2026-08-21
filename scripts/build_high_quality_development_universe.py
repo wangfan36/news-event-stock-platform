@@ -1,14 +1,12 @@
 from __future__ import annotations
 
+import argparse
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parent.parent
-CATALOG_PATH = ROOT / "iching_alpha" / "catalogs" / "high_quality_development_universe.json"
-INDUSTRY_MAPPING_PATH = Path(r"D:\Github_Program\qlib_data\industry_mapping_sw_l1.json")
-INSTRUMENTS_PATH = Path(r"D:\Github_Program\qlib_data\qlib_format\instruments\all.txt")
+CATALOG_PATH = ROOT / "news_alpha" / "catalogs" / "high_quality_development_universe.json"
 
 
 HQD_GROUPS: dict[str, dict[str, object]] = {
@@ -45,13 +43,13 @@ HQD_GROUPS: dict[str, dict[str, object]] = {
 }
 
 
-def load_industry_mapping() -> dict[str, str]:
-    return json.loads(INDUSTRY_MAPPING_PATH.read_text(encoding="utf-8"))
+def load_industry_mapping(path: Path) -> dict[str, str]:
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_instruments() -> set[str]:
+def load_instruments(path: Path) -> set[str]:
     symbols: set[str] = set()
-    for line in INSTRUMENTS_PATH.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         parts = line.split("\t")
@@ -64,9 +62,9 @@ def load_instruments() -> set[str]:
     return symbols
 
 
-def build_universe() -> dict[str, object]:
-    industry_mapping = load_industry_mapping()
-    live_instruments = load_instruments()
+def build_universe(industry_mapping_path: Path, instruments_path: Path) -> dict[str, object]:
+    industry_mapping = load_industry_mapping(industry_mapping_path)
+    live_instruments = load_instruments(instruments_path)
     by_group: dict[str, dict[str, object]] = {}
     all_symbols: set[str] = set()
 
@@ -92,8 +90,8 @@ def build_universe() -> dict[str, object]:
 
     coverage = Counter(industry_mapping[symbol] for symbol in all_symbols)
     return {
-        "generated_from": str(INDUSTRY_MAPPING_PATH),
-        "instrument_source": str(INSTRUMENTS_PATH),
+        "generated_from": str(industry_mapping_path),
+        "instrument_source": str(instruments_path),
         "group_count": len(by_group),
         "total_company_count": len(all_symbols),
         "groups": by_group,
@@ -102,9 +100,14 @@ def build_universe() -> dict[str, object]:
 
 
 def main() -> None:
-    payload = build_universe()
-    CATALOG_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"[SAVED] {CATALOG_PATH}")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--industry-mapping", type=Path, required=True)
+    parser.add_argument("--instruments", type=Path, required=True)
+    parser.add_argument("--output", type=Path, default=CATALOG_PATH)
+    args = parser.parse_args()
+    payload = build_universe(args.industry_mapping, args.instruments)
+    args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[SAVED] {args.output}")
     print(f"[GROUPS] {payload['group_count']}")
     print(f"[TOTAL] {payload['total_company_count']}")
     for group_id, group in payload["groups"].items():

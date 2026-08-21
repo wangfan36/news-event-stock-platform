@@ -2,7 +2,12 @@
 setlocal
 cd /d "%~dp0"
 
-echo Starting local app...
-start "news-stock-platform" cmd /k "cd /d %~dp0 && python -m iching_alpha.webapp"
-timeout /t 3 /nobreak >nul
+if not exist ".venv\Scripts\python.exe" (
+  echo Virtual environment not found. Run scripts\setup.ps1 first.
+  pause
+  exit /b 1
+)
+
+start "News Alpha" cmd /k ""%CD%\.venv\Scripts\python.exe" -m news_alpha.webapp"
+timeout /t 2 /nobreak >nul
 start "" http://127.0.0.1:8000/

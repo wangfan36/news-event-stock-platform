@@ -5,9 +5,8 @@ import time
 import urllib.request
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parent.parent
-OUTPUT_PATH = ROOT / "iching_alpha" / "catalogs" / "a_share_name_map.json"
+OUTPUT_PATH = ROOT / "news_alpha" / "catalogs" / "a_share_name_map.json"
 BASE_URL = (
     "https://82.push2.eastmoney.com/api/qt/clist/get"
     "?po=1&np=1&fltt=2&invt=2&fid=f3"

@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "news-alpha"
+version = "1.0.0"
+description = "Local-first, explainable news-driven research for A-share and Hong Kong stocks."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "wangfan36"}]
+keywords = ["finance", "rss", "a-share", "hong-kong-stock", "event-driven"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "Flask>=3.0,<4.0",
+  "pandas>=2.0,<3.0",
+  "PyYAML>=6.0,<7.0",
+]
+
+[project.optional-dependencies]
+market = ["akshare>=1.18.0", "pyarrow>=16.0"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+news-alpha = "news_alpha.webapp:main"
+
+[tool.setuptools.packages.find]
+include = ["news_alpha*"]
+
+[tool.setuptools.package-data]
+news_alpha = ["catalogs/*.json", "static/*", "templates/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
