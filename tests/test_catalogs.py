@@ -1,4 +1,4 @@
-from iching_alpha.catalogs import COMPANY_CATALOG, EVENT_BLUEPRINTS, INDUSTRY_CATALOG
+from news_alpha.catalogs import COMPANY_CATALOG, EVENT_BLUEPRINTS, INDUSTRY_CATALOG
 
 
 def test_external_catalogs_load_expected_core_entries() -> None:

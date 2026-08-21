@@ -1,4 +1,4 @@
-from iching_alpha.recommendation_manager import synthesize_recommendation
+from news_alpha.recommendation_manager import synthesize_recommendation
 
 
 def _minimal_payload(level: str, score: int) -> dict:

@@ -1,18 +1,55 @@
+import json
+
 import pandas as pd
 
-import iching_alpha.market_fundamentals as market_fundamentals_module
-from iching_alpha.market_fundamentals import build_company_snapshot_bundle
-from iching_alpha.market_fundamentals import build_execution_plan
+import news_alpha.market_fundamentals as market_fundamentals_module
+from news_alpha.market_fundamentals import build_company_snapshot_bundle, build_execution_plan
 
 
-def test_hk_override_price_snapshot_can_be_loaded() -> None:
+def test_hk_override_price_snapshot_can_be_loaded(tmp_path, monkeypatch) -> None:
+    override_path = tmp_path / "price_overrides.json"
+    override_path.write_text(
+        json.dumps(
+            {
+                "items": {
+                    "01138.HK": {
+                        "status": "ok",
+                        "provider": "yahoo-public-chart",
+                        "latest_price": 8.2,
+                        "previous_close": 8.0,
+                        "sma20": 8.0,
+                        "position_20d_pct": 65.0,
+                        "day_change_pct": 2.5,
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(market_fundamentals_module, "PRICE_OVERRIDE_PATH", override_path)
+    market_fundamentals_module._load_hk_override_document.cache_clear()
+
     bundle = build_company_snapshot_bundle("01138.HK", "2026-04-15")
 
     assert bundle["price_snapshot"]["status"] == "ok"
     assert bundle["price_snapshot"]["provider"] == "yahoo-public-chart"
 
 
-def test_hk_financial_snapshots_can_be_loaded_for_some_symbols() -> None:
+def test_hk_financial_snapshots_can_be_loaded_for_some_symbols(monkeypatch) -> None:
+    monkeypatch.setattr(
+        market_fundamentals_module,
+        "_load_hk_indicator_payload",
+        lambda symbol: {
+            "source": "fixture",
+            "row": {
+                "REPORT_DATE": "2025-12-31",
+                "PE_TTM": 12.5,
+                "PB_TTM": 1.8,
+                "ROE_AVG": 14.2,
+                "OPERATE_INCOME_YOY": 8.6,
+            },
+        },
+    )
     for symbol in ["00981.HK", "00883.HK"]:
         bundle = build_company_snapshot_bundle(symbol, "2026-04-15")
         assert bundle["valuation_snapshot"]["status"] == "ok"

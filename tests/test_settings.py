@@ -1,4 +1,5 @@
-from iching_alpha.storage import (
+from news_alpha.model_client import _effective_temperature
+from news_alpha.storage import (
     get_user_settings,
     prepare_settings_for_storage,
     sanitize_settings_for_output,
@@ -34,7 +35,6 @@ def test_settings_roundtrip_masks_api_key(tmp_path) -> None:
     sanitized = sanitize_settings_for_output(loaded)
     assert sanitized["model_settings"]["has_api_key"] is True
     assert "api_key" not in sanitized["model_settings"]
-from iching_alpha.model_client import _effective_temperature
 
 
 def test_kimi_temperature_is_forced_to_one() -> None:

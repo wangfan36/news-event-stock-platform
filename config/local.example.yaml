@@ -1,0 +1,8 @@
+artifacts_dir: artifacts
+
+market_data:
+  # Example: D:/market-data/daily_prices.parquet
+  parquet_path: ""
+  # Plain-text file: one A/H symbol per line, or tab-separated qlib instrument rows.
+  universe_path: ""
+  price_override_path: artifacts/data/price_overrides.json

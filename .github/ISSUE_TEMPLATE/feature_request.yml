@@ -1,0 +1,23 @@
+name: Feature request
+description: Propose an improvement with a clear research use case
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Research use case
+      description: Describe the decision or workflow this feature improves.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Data and evidence requirements
+      description: List expected sources, audit fields, and failure modes.

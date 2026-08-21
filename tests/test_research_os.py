@@ -1,8 +1,8 @@
 from datetime import date
 
-import iching_alpha.ai_research_pipeline as ai_pipeline_module
-import iching_alpha.research_os as research_os_module
-from iching_alpha.research_os import (
+import news_alpha.ai_research_pipeline as ai_pipeline_module
+import news_alpha.research_os as research_os_module
+from news_alpha.research_os import (
     ResearchRequest,
     _apply_confidence_gate_to_action,
     _build_ai_participation_status,

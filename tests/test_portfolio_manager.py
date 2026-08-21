@@ -1,4 +1,4 @@
-from iching_alpha.portfolio_manager import build_portfolio_plan
+from news_alpha.portfolio_manager import build_portfolio_plan
 
 
 def test_portfolio_plan_builds_target_positions_and_alerts() -> None:
