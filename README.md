@@ -1,31 +1,33 @@
-# News Alpha 新闻驱动选股平台
+# News Alpha: News-Driven Stock Research Platform
+
+**English** | [简体中文](README.zh-CN.md)
 
 [![CI](https://github.com/wangfan36/news-event-stock-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/wangfan36/news-event-stock-platform/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-1f6feb)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-0f766e)](LICENSE)
 [![Stage](https://img.shields.io/badge/status-alpha-c76b29)](CHANGELOG.md)
 
-![News Alpha 本地研究工作台](docs/images/dashboard.png)
+![News Alpha local research workspace](docs/images/dashboard.png)
 
-一个本地优先、可解释、可审计的 A 股与港股新闻事件研究工作台。系统把 RSS 新闻整理为事件，映射到产业链和上市公司，再通过规则评分与可选大模型生成结构化研究建议。
+News Alpha is a local-first, explainable, and auditable news-event research workspace for A-share and Hong Kong stocks. It turns RSS news into structured events, maps them to industries, supply chains, and listed companies, and generates research recommendations using rule-based scoring with optional large-language-model enhancement.
 
-> 本项目仅用于信息整理、研究辅助和软件演示，不构成投资建议，不连接券商，不自动下单，也不承诺收益。
+> This project is provided for information organization, research assistance, and software demonstration only. It is not investment advice, does not connect to brokers or execute trades, and makes no promise of returns.
 
-## 核心能力
+## Features
 
-- 自定义 RSS：支持 RSS 2.0 与 Atom，每行一个源，自动清理空格、忽略注释并去重。
-- 事件推演：输出事件阶段、基准/乐观/悲观路径、催化剂、观察点和失效条件。
-- 产业链映射：区分直接受益、间接受益、主题映射、受损和待验证环节。
-- A/H 公司画像：结合产业链位置、事件弹性、技术面、市场位置和可选本地财务数据。
-- 可解释建议：每条结论保留“新闻 -> 事件 -> 产业 -> 公司”证据链与置信度门槛。
-- 本地持久化：RSS、运行快照和历史观点保存在本机 SQLite；运行数据不会进入 Git。
-- 自带前台：热点总览、事件详情、产业链、候选池、建议卡与历史回放集中在一个工作台。
+- Custom RSS sources: supports RSS 2.0 and Atom, one source per line, with whitespace cleanup, comment handling, and URL deduplication.
+- Event scenarios: produces event stages, base/bull/bear paths, catalysts, monitoring points, and invalidation conditions.
+- Supply-chain mapping: distinguishes direct beneficiaries, indirect beneficiaries, thematic exposure, adverse exposure, and unverified links.
+- A/H company profiles: combines supply-chain position, event sensitivity, technical indicators, market position, and optional local fundamental data.
+- Explainable recommendations: every conclusion retains a traceable `news -> event -> industry -> company` evidence chain and confidence threshold.
+- Local persistence: RSS settings, run snapshots, and historical views are stored in local SQLite; runtime data is excluded from Git.
+- Built-in web interface: hotspot overview, event details, supply-chain analysis, candidate stocks, recommendation cards, and historical replay in one workspace.
 
-## 快速开始
+## Quick Start
 
-要求 Python 3.10 或更高版本。
+Python 3.10 or later is required.
 
-### Windows 一键安装
+### Windows Setup
 
 ```powershell
 git clone https://github.com/wangfan36/news-event-stock-platform.git
@@ -34,9 +36,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 .\scripts\start.ps1
 ```
 
-也可以安装后双击 `start_local.bat`。浏览器地址为 [http://127.0.0.1:8000](http://127.0.0.1:8000)。
+After installation, you can also double-click `start_local.bat`. Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
-### 通用安装
+### Cross-Platform Setup
 
 ```bash
 python -m venv .venv
@@ -46,41 +48,41 @@ python -m pip install -e ".[dev]"
 python -m news_alpha.webapp
 ```
 
-首次启动无需行情文件，也无需模型 API。系统会使用内置演示新闻、规则引擎和 mock 技术面运行完整链路。
+No market-data file or model API is required for the first run. The application can execute the complete workflow with bundled demo news, the rule engine, and mock technical indicators.
 
-## RSS 与模型
+## RSS and Models
 
-RSS 每行格式：
+Use one RSS source per line:
 
 ```text
-URL | 名称 | 区域 | 市场 | 来源类型
-https://example.com/feed.xml | Example News | 全球 | A股+港股 | 财经媒体
+URL | Name | Region | Market | Source Type
+https://example.com/feed.xml | Example News | Global | A-share+Hong Kong | Financial Media
 ```
 
-只有 URL 必填。分隔符 `|` 两侧可以有空格；空行与 `#` 开头的注释行会忽略；重复 URL 只保留第一条。完整规范见 [RSS 与模型配置](docs/rss-and-models.md)。
+Only the URL is required. Spaces around `|` are allowed. Blank lines and lines beginning with `#` are ignored, and duplicate URLs keep only the first entry. See [RSS and model configuration](docs/rss-and-models.md) for the full specification.
 
-大模型不是决策源，只能在不修改动作方向的前提下补充或润色结构化文本。支持 OpenAI 兼容接口；推荐通过 `NEWS_ALPHA_API_KEY` 环境变量提供密钥。
+The language model is not the decision source. It may only enrich or refine structured text without changing the rule engine's action direction. OpenAI-compatible endpoints are supported; use the `NEWS_ALPHA_API_KEY` environment variable for the API key whenever possible.
 
-## 工作原理
+## How It Works
 
 ```mermaid
 flowchart LR
-    A["RSS / 演示新闻"] --> B["标准化、去重、聚类"]
-    B --> C["事件模板与情景推演"]
-    C --> D["产业及产业链映射"]
-    D --> E["A股 / 港股候选公司"]
-    E --> F["事件、技术、市场、基本面、风险评分"]
-    F --> G["置信度门槛与动作收口"]
-    G --> H["前台、API、SQLite 历史回放"]
-    I["可选大模型"] -. "仅增强解释" .-> C
-    I -. "不改变动作" .-> G
+    A["RSS / demo news"] --> B["Normalize, deduplicate, cluster"]
+    B --> C["Event templates and scenario analysis"]
+    C --> D["Industry and supply-chain mapping"]
+    D --> E["A-share / Hong Kong candidates"]
+    E --> F["Event, technical, market, fundamental, and risk scores"]
+    F --> G["Confidence thresholds and action constraints"]
+    G --> H["Web UI, API, and SQLite history"]
+    I["Optional language model"] -. "Explanation only" .-> C
+    I -. "Cannot change actions" .-> G
 ```
 
-规则层负责结构、映射、分数和动作门槛；模型层负责受约束的文本增强。详细模块、数据对象、评分机制与降级策略见 [架构说明](docs/architecture.md)。原始产品需求见 [产品需求 v1](docs/product-requirements.md)。
+The rule layer controls structure, mappings, scores, and action thresholds. The model layer provides constrained text enhancement. See the [architecture guide](docs/architecture.md) for modules, data objects, scoring, and fallback behavior. The original product scope is documented in [Product Requirements v1](docs/product-requirements.md).
 
-## 配置
+## Configuration
 
-默认配置位于 `config/default.yaml`，可复制为不会被 Git 跟踪的 `config/local.yaml`。本地行情完全可选：
+Defaults live in `config/default.yaml`. Copy `config/local.example.yaml` to the Git-ignored `config/local.yaml` for machine-specific settings. Local market data is optional:
 
 ```yaml
 artifacts_dir: artifacts
@@ -90,13 +92,13 @@ market_data:
   price_override_path: artifacts/data/price_overrides.json
 ```
 
-可用环境变量见 [.env.example](.env.example)。如需 AKShare 与 Parquet 增强能力，安装：
+Available environment variables are listed in [.env.example](.env.example). Install the optional AKShare and Parquet integrations with:
 
 ```bash
 python -m pip install -e ".[market]"
 ```
 
-## 开发与测试
+## Development
 
 ```bash
 python -m pytest
@@ -104,19 +106,19 @@ ruff check news_alpha tests scripts
 python scripts/check_local_app.py
 ```
 
-目录结构：
+Repository layout:
 
 ```text
-news_alpha/        核心引擎、Flask API、前端与知识库
-config/            可移植默认配置和本地配置示例
-tests/             新闻、事件、推荐、存储和 API 测试
-scripts/           安装、启动、诊断与知识库维护工具
-docs/              架构、RSS 规范和产品需求
-.github/           CI、Issue 与 PR 模板
+news_alpha/        Core engine, Flask API, frontend, and knowledge catalogs
+config/            Portable defaults and local configuration example
+tests/             News, event, recommendation, storage, and API tests
+scripts/           Setup, startup, diagnostics, and catalog maintenance
+docs/              Architecture, RSS specification, roadmap, and product scope
+.github/           CI, issue forms, and pull-request template
 ```
 
-## 当前边界
+## Current Limitations
 
-当前版本是研究型 alpha：事件知识库覆盖有限，未知事件可能只进入新闻流而无法形成完整建议；目标价与赔率是规则启发式结果，不是严格估值模型；实时行情、公告源和历史绩效归因仍需继续建设。详细计划见 [路线图](docs/roadmap.md)。
+This is a research alpha. The event knowledge base has limited coverage, and unknown events may appear in the news stream without producing complete recommendations. Target ranges and risk/reward estimates are rule-based heuristics rather than full valuation models. Real-time market data, regulatory filings, and historical performance attribution remain roadmap items. See the [roadmap](docs/roadmap.md) for details.
 
-欢迎提交 Issue 和 Pull Request。贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
+Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before contributing, and report security concerns privately according to [SECURITY.md](SECURITY.md).
