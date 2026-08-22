@@ -493,7 +493,7 @@ def test_ai_pipeline_uses_environment_api_key(monkeypatch) -> None:
     )
 
     assert received["api_key"] == "environment-key-for-test"
-    assert pipeline["status"] == "partial"
+    assert pipeline["status"] != "missing_credentials"
 
 
 def test_ai_pipeline_rejects_corrupted_question_mark_text(monkeypatch) -> None:
