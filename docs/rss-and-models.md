@@ -1,44 +1,77 @@
-# RSS 与模型配置
+# RSS and Model Configuration
 
-## RSS 行格式
+**English** | [简体中文](rss-and-models.zh-CN.md)
 
-每行一个源，字段使用半角竖线 `|` 分隔：
+## Add RSS sources
+
+1. Start the application and open `http://127.0.0.1:8000/#settings`.
+2. Go to **Data & Models** (`数据与模型`) > **RSS Sources** (`RSS 数据源`).
+3. Enter one source per line and enable **Prefer live RSS when generating** (`生成时优先抓取真实 RSS`).
+4. Select **Save all settings** (`保存全部配置`), then **Refresh data** (`刷新数据`) to validate access or **Generate research** (`生成研究`) to run the pipeline.
+
+Separate fields with an ASCII pipe character (`|`):
 
 ```text
-URL | 名称 | 区域 | 市场 | 来源类型
+URL | Name | Region | Market | Source Type
+https://example.com/feed.xml | Example News | Global | A-share+Hong Kong | Financial Media
 ```
 
-只有 URL 必填，其余字段为空时采用默认值。规范如下：
-
-- 支持 `http://` 和 `https://`，其他协议会忽略。
-- `|` 两侧空格会自动清理；URL 内部不能有空格。
-- 空行和以 `#` 开头的行会忽略。
-- 重复 URL 只保留第一次出现的配置。
-- 单次最多读取 50 个自定义源。
-- 支持 RSS 2.0 的 `item` 和 Atom 的 `entry`。
-- 发布时间优先读取 `pubDate/published/updated/date`；缺失时使用保守默认时效。
-
-示例：
+Only the URL is required. Both forms below are valid:
 
 ```text
-# 全球市场
-https://example.com/world.xml | World Desk | 全球 | A股+港股 | 国际媒体
+# Spaces around separators are allowed
+https://example.com/world.xml | World Desk | Global | A-share+Hong Kong | International Media
 
-# 只有 URL 也合法
+# URL only
 https://example.org/atom.xml
 ```
 
-## 模型配置
+Parsing rules:
 
-前台支持 OpenAI 兼容接口的 `Base URL`、`Model` 与 `API Key`。推荐在启动进程前设置环境变量，而不是把密钥写入本地数据库：
+- Only `http://` and `https://` URLs are accepted; a URL cannot contain spaces.
+- Spaces around `|` are trimmed, and missing optional fields receive defaults.
+- Blank lines and lines beginning with `#` are ignored.
+- Duplicate URLs keep only their first occurrence.
+- At most 50 custom sources are loaded at once.
+- RSS 2.0 `item` and Atom `entry` elements are supported.
+- Publication time is read from `pubDate`, `published`, `updated`, or `date` when available.
+
+Use the feed URL, not the publisher's website home page. If validation fails, confirm that the URL is reachable from the local machine, returns XML without a login or CAPTCHA, and is not blocked by a proxy, firewall, or certificate policy. One failed source does not prevent the rule engine from using other sources or demo data.
+
+## Add a model API key
+
+News Alpha supports OpenAI-compatible endpoints. Prefer a process environment variable instead of putting a key in source code or example configuration.
+
+PowerShell, for the current session:
 
 ```powershell
-$env:NEWS_ALPHA_API_KEY = "your-key"
-.\scripts\start.ps1
+$env:NEWS_ALPHA_API_KEY = "<your-provider-api-key>"
+python -m news_alpha.webapp
 ```
 
-如通过前台保存，密钥仅写入本机 `artifacts/db/news_stock.db`，API 返回时会脱敏；`artifacts/` 已被 Git 忽略。不要上传数据库、日志、截图中的密钥或 `config/local.yaml`。
+macOS or Linux:
 
-模型只增强事件摘要和建议解释，不能改变规则生成的动作。请求失败时，工作区会返回 `model_runtime.status=error`，规则结果仍然有效。
+```bash
+export NEWS_ALPHA_API_KEY="<your-provider-api-key>"
+python -m news_alpha.webapp
+```
 
-如已安装 `market` 可选依赖，并希望允许系统调用网络财务接口，可显式设置 `NEWS_ALPHA_ENABLE_NETWORK_FUNDAMENTALS=1`。默认关闭，避免一次研究生成触发大量第三方请求。
+Then open **Data & Models** (`数据与模型`) > **Model API** (`大模型 API`):
+
+1. Enable model enrichment.
+2. Select `openai-compatible` as the provider.
+3. Enter the provider's Base URL, for example `https://api.openai.com/v1`.
+4. Enter a model name supported by that provider.
+5. Leave the API Key field empty when using the environment variable and no key was previously saved in the UI. A previously saved local key takes precedence.
+6. Save the settings and generate one research run; inspect system status for the model result.
+
+You may instead enter the API key in the web UI. This stores it in the local `artifacts/db/news_stock.db` database; API responses mask the value, and `artifacts/` is ignored by Git. When `codex-cli` is selected, the application uses the existing local Codex login and no API key is entered in the web UI.
+
+## Secret safety
+
+- Never put a real key in `.env.example`, documentation, source code, issues, logs, or screenshots.
+- `.env`, `config/local.yaml`, `artifacts/`, and local databases are ignored by default.
+- Run `python scripts/check_secrets.py` before pushing; CI runs the same check.
+- If a key was committed, revoke and rotate it immediately. Deleting it from the latest commit does not remove it from Git history.
+
+The model only enriches structured research text and cannot change the rule engine's action direction. Rule-based results remain available when a model request fails.

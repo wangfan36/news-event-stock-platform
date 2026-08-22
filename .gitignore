@@ -16,6 +16,9 @@ venv/
 .env.*
 !.env.example
 config/local.yaml
+config/secrets.*
+credentials.json
+secrets.json
 artifacts/
 *.db
 *.sqlite*

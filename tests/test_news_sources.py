@@ -11,6 +11,7 @@ def test_custom_rss_parser_trims_fields_ignores_comments_and_deduplicates() -> N
 
     https://example.com/feed.xml | Duplicate
     ftp://example.com/invalid.xml | Invalid
+    https://example.com/invalid feed.xml | Invalid whitespace
     https://example.org/rss
     """
 
@@ -20,7 +21,7 @@ def test_custom_rss_parser_trims_fields_ignores_comments_and_deduplicates() -> N
     assert sources[0]["url"] == "https://example.com/feed.xml"
     assert sources[0]["label"] == "Example News"
     assert sources[0]["source_kind"] == "财经媒体"
-    assert sources[1]["label"] == "Custom RSS 7"
+    assert sources[1]["label"] == "Custom RSS 8"
 
 
 def test_rfc822_publication_date_is_preserved_by_normalization() -> None:
