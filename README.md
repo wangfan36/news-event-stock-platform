@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/wangfan36/news-event-stock-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/wangfan36/news-event-stock-platform/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-1f6feb)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-0f766e)](LICENSE)
+[![License](https://img.shields.io/badge/License-PolyForm_Noncommercial_1.0.0-0f766e)](LICENSE)
 [![Stage](https://img.shields.io/badge/status-alpha-c76b29)](CHANGELOG.md)
 
 ![News Alpha local research workspace](docs/images/dashboard.png)
@@ -121,5 +121,11 @@ docs/              Architecture, RSS specification, roadmap, and product scope
 ## Current Limitations
 
 This is a research alpha. The event knowledge base has limited coverage, and unknown events may appear in the news stream without producing complete recommendations. Target ranges and risk/reward estimates are rule-based heuristics rather than full valuation models. Real-time market data, regulatory filings, and historical performance attribution remain roadmap items. See the [roadmap](docs/roadmap.md) for details.
+
+## License
+
+News Alpha is **source-available for noncommercial use**, not OSI open-source software. Personal research, study, experiments, testing, and hobby use are permitted under the [PolyForm Noncommercial License 1.0.0](LICENSE) when there is no anticipated commercial application. Commercial use, including paid services, SaaS, client delivery, monetized workflows, and internal business operations, requires separate prior written permission.
+
+Release `v1.0.0` and repository revisions through commit `0c895e8` remain available under the MIT terms originally distributed with them; the new license does not retroactively withdraw those permissions. Read the [complete licensing explanation](LICENSING.md), including permitted-use examples, the historical-version boundary, legal references, and third-party-rights notice.
 
 Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before contributing, and report security concerns privately according to [SECURITY.md](SECURITY.md).

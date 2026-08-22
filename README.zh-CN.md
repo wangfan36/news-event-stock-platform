@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/wangfan36/news-event-stock-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/wangfan36/news-event-stock-platform/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-1f6feb)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-0f766e)](LICENSE)
+[![License](https://img.shields.io/badge/License-PolyForm_Noncommercial_1.0.0-0f766e)](LICENSE)
 [![Stage](https://img.shields.io/badge/status-alpha-c76b29)](CHANGELOG.md)
 
 ![News Alpha 本地研究工作台](docs/images/dashboard.png)
@@ -121,5 +121,11 @@ docs/              架构、RSS 规范、路线图和产品需求
 ## 当前边界
 
 当前版本是研究型 alpha：事件知识库覆盖有限，未知事件可能只进入新闻流而无法形成完整建议；目标价与赔率是规则启发式结果，不是严格估值模型；实时行情、公告源和历史绩效归因仍需继续建设。详细计划见 [路线图](docs/roadmap.md)。
+
+## 许可证
+
+News Alpha 是**仅限非商业使用的源码可见软件**，不是 OSI 定义的开源软件。在没有预期商业应用的前提下，可以按照 [PolyForm Noncommercial License 1.0.0](LICENSE) 用于个人研究、学习、实验、测试和兴趣项目。收费服务、SaaS、客户交付、变现流程及企业内部经营等商业用途，必须事先取得单独的书面授权。
+
+`v1.0.0` 版本及截至提交 `0c895e8` 的仓库版本，仍适用发布时附带的 MIT 条款；新许可证不会追溯撤销已经授予的旧版权利。允许用途示例、历史版本边界、法律依据及第三方权利提示见[完整中文授权说明](LICENSING.zh-CN.md)。
 
 欢迎提交 Issue 和 Pull Request。贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
