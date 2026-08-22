@@ -52,6 +52,26 @@
   const settingsStatus = document.getElementById("settings-status");
   const loadDemoButton = document.getElementById("load-demo");
   const generateDemoButton = document.getElementById("generate-demo");
+  const settingsGenerateShortcut = document.getElementById("settings-generate-shortcut");
+  const themeSelect = document.getElementById("theme-select");
+  const fontScaleSelect = document.getElementById("font-scale-select");
+  const densitySelect = document.getElementById("density-select");
+  const activeViewTitle = document.getElementById("active-view-title");
+  const navToggle = document.getElementById("nav-toggle");
+  const navClose = document.getElementById("nav-close");
+  const sidebarBackdrop = document.getElementById("sidebar-backdrop");
+  const appToast = document.getElementById("app-toast");
+  const VIEW_TITLES = {
+    overview: "研究总览",
+    events: "事件研究",
+    industries: "产业链",
+    securities: "标的建议",
+    portfolio: "组合终端",
+    history: "历史回放",
+    settings: "数据与模型设置",
+  };
+  const WORKSPACE_VIEWS = ["overview", "events", "industries", "securities", "portfolio"];
+  const ALL_VIEWS = WORKSPACE_VIEWS.concat(["history", "settings"]);
   let currentWorkspace = bootstrap.demoWorkspace || null;
   let currentEventReplay = null;
   let currentPortfolioReplay = null;
@@ -64,7 +84,10 @@
     market: "all",
   };
   let historySearchTimer = null;
+  let toastTimer = null;
+  let activeView = initialView();
 
+  initializeInterface();
   populateForm(bootstrap.formDefaults || bootstrap.demoRequest || {});
   populateSettings(bootstrap.userSettings || {});
   checkCodexStatus();
@@ -83,8 +106,20 @@
     generateWorkspace();
   });
 
+  if (settingsGenerateShortcut) {
+    settingsGenerateShortcut.addEventListener("click", function () {
+      saveSettings().then(function () {
+        generateWorkspace();
+      }).catch(function () {
+        // Do not generate with settings that failed to persist.
+      });
+    });
+  }
+
   saveSettingsButton.addEventListener("click", function () {
-    saveSettings();
+    saveSettings().catch(function () {
+      // The settings status and toast already contain the actionable error.
+    });
   });
 
   refreshHistoryButton.addEventListener("click", function () {
@@ -123,6 +158,125 @@
     event.preventDefault();
     generateWorkspace();
   });
+
+  function initialView() {
+    const requested = window.location.hash.replace(/^#/, "");
+    if (ALL_VIEWS.indexOf(requested) !== -1) {
+      return requested;
+    }
+    return pageMode === "portfolio" ? "portfolio" : "overview";
+  }
+
+  function initializeInterface() {
+    syncPreference(themeSelect, "theme", "news-alpha-theme", ["dark", "light"], "dark");
+    syncPreference(fontScaleSelect, "fontScale", "news-alpha-font-scale", ["standard", "large"], "standard");
+    syncPreference(densitySelect, "density", "news-alpha-density", ["comfortable", "compact"], "comfortable");
+
+    if (!bootstrap.demoWorkspace) {
+      renderEmptyWorkspaceViews();
+    }
+    setActiveView(activeView, false);
+    if (!window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname + "#" + activeView);
+    }
+    window.addEventListener("hashchange", function () {
+      setActiveView(initialView(), false);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-nav-view]"), function (link) {
+      link.addEventListener("click", closeNavigation);
+    });
+    if (navToggle) {
+      navToggle.addEventListener("click", openNavigation);
+    }
+    if (navClose) {
+      navClose.addEventListener("click", closeNavigation);
+    }
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener("click", closeNavigation);
+    }
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeNavigation();
+      }
+    });
+  }
+
+  function syncPreference(select, datasetKey, storageKey, allowedValues, fallback) {
+    if (!select) {
+      return;
+    }
+    let value = document.documentElement.dataset[datasetKey] || fallback;
+    if (allowedValues.indexOf(value) === -1) {
+      value = fallback;
+    }
+    document.documentElement.dataset[datasetKey] = value;
+    select.value = value;
+    select.addEventListener("change", function () {
+      const nextValue = allowedValues.indexOf(select.value) === -1 ? fallback : select.value;
+      document.documentElement.dataset[datasetKey] = nextValue;
+      try {
+        window.localStorage.setItem(storageKey, nextValue);
+      } catch (error) {
+        showToast("浏览器未允许保存阅读偏好。", true);
+      }
+    });
+  }
+
+  function setActiveView(view, updateHash) {
+    const nextView = ALL_VIEWS.indexOf(view) === -1 ? (pageMode === "portfolio" ? "portfolio" : "overview") : view;
+    activeView = nextView;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-view]"), function (section) {
+      section.hidden = section.dataset.view !== nextView;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-nav-view]"), function (link) {
+      if (link.dataset.navView === nextView) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+    if (activeViewTitle) {
+      activeViewTitle.textContent = VIEW_TITLES[nextView] || "研究终端";
+    }
+    document.title = (VIEW_TITLES[nextView] || "News Alpha") + " · News Alpha";
+    closeNavigation();
+    if (updateHash && window.location.hash !== "#" + nextView) {
+      window.location.hash = nextView;
+    }
+  }
+
+  function openNavigation() {
+    document.body.classList.add("nav-open");
+    if (navToggle) {
+      navToggle.setAttribute("aria-expanded", "true");
+    }
+    if (sidebarBackdrop) {
+      sidebarBackdrop.hidden = false;
+    }
+  }
+
+  function closeNavigation() {
+    document.body.classList.remove("nav-open");
+    if (navToggle) {
+      navToggle.setAttribute("aria-expanded", "false");
+    }
+    if (sidebarBackdrop) {
+      sidebarBackdrop.hidden = true;
+    }
+  }
+
+  function showToast(message, isError) {
+    if (!appToast) {
+      return;
+    }
+    window.clearTimeout(toastTimer);
+    appToast.textContent = message;
+    appToast.classList.toggle("is-error", Boolean(isError));
+    appToast.hidden = false;
+    toastTimer = window.setTimeout(function () {
+      appToast.hidden = true;
+    }, 4200);
+  }
 
   function populateForm(payload) {
     watchlistInput.value = (payload.watchlist || []).map(function (item) {
@@ -263,7 +417,7 @@
 
   function saveSettings() {
     setStatus("正在保存设置...");
-    fetch("/api/settings", {
+    return fetch("/api/settings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -288,17 +442,22 @@
         } catch (error) {
           console.error("populateSettings failed", error);
           setStatus("设置已保存，但前端刷新配置时出错。请刷新页面。");
-          return;
+          throw error;
         }
         setStatus("设置已保存。生成时会优先使用你的 RSS 和模型。");
+        return settings;
       })
       .catch(function (error) {
         setStatus("保存失败：" + error.message);
+        throw error;
       });
   }
 
   function generateWorkspace(overrides) {
-    workspaceRoot.innerHTML = '<div class="empty-state"><p>正在生成本地研究工作台...</p></div>';
+    workspaceRoot.setAttribute("aria-busy", "true");
+    if (!currentWorkspace) {
+      workspaceRoot.innerHTML = '<section class="app-view" data-view="' + escapeHtml(activeView) + '"><div class="empty-state"><p>正在生成本地研究工作台...</p></div></section>';
+    }
     setStatus("正在生成本地工作台...");
     const payload = Object.assign({}, collectPayload(), overrides || {});
     fetch("/api/research/generate", {
@@ -308,6 +467,7 @@
     })
       .then(ensureJson)
       .then(function (workspace) {
+        workspaceRoot.removeAttribute("aria-busy");
         currentWorkspace = workspace;
         renderWorkspace(workspace);
         setStatus("生成完成。已写入本地历史。");
@@ -315,7 +475,10 @@
         loadHistoryRuns();
       })
       .catch(function (error) {
-        workspaceRoot.innerHTML = '<div class="empty-state"><p>生成失败：' + escapeHtml(error.message) + "</p></div>";
+        workspaceRoot.removeAttribute("aria-busy");
+        if (!currentWorkspace) {
+          workspaceRoot.innerHTML = '<section class="app-view" data-view="' + escapeHtml(activeView) + '"><div class="empty-state"><p>生成失败：' + escapeHtml(error.message) + "</p></div></section>";
+        }
         setStatus("生成失败：" + error.message);
       });
   }
@@ -372,8 +535,11 @@
           });
         }
       })
-      .catch(function () {
-        historyList.innerHTML = '<div class="history-empty">历史列表读取失败。</div>';
+      .catch(function (error) {
+        if (!historyList.querySelector(".history-item")) {
+          historyList.innerHTML = '<div class="history-empty">历史列表读取失败。</div>';
+        }
+        setStatus("历史列表读取失败：" + error.message);
       });
   }
 
@@ -381,16 +547,20 @@
     if (!runId) {
       return;
     }
-    workspaceRoot.innerHTML = '<div class="empty-state"><p>正在载入历史运行...</p></div>';
+    workspaceRoot.setAttribute("aria-busy", "true");
+    setStatus("正在载入历史运行 " + runId.slice(0, 8) + "...");
     fetch("/api/history/runs/" + encodeURIComponent(runId))
       .then(ensureJson)
       .then(function (workspace) {
+        workspaceRoot.removeAttribute("aria-busy");
         currentWorkspace = workspace;
         renderWorkspace(workspace);
+        setActiveView(pageMode === "portfolio" ? "portfolio" : "overview", true);
         setStatus("已载入历史运行 " + runId.slice(0, 8) + "。");
       })
       .catch(function (error) {
-        workspaceRoot.innerHTML = '<div class="empty-state"><p>载入失败：' + escapeHtml(error.message) + "</p></div>";
+        workspaceRoot.removeAttribute("aria-busy");
+        setStatus("历史运行载入失败：" + error.message);
       });
   }
 
@@ -415,40 +585,63 @@
       renderComplianceCard(workspace.compliance || {}, workspace.generated_at, workspace.storage || {}, workspace.model_runtime || {}),
       '</div>',
     ].join("");
-    const fullContent = [
+    const overviewContent = [
+      workspaceTopline,
       renderRunComparisonPanel(workspace.run_comparison || {}),
       renderAiParticipationPanel(workspace.ai_participation_status || {}, workspace.source_diagnostics || {}),
       renderManagerOverview(workspace.recommendation_views || []),
-      portfolioTerminal,
       renderDailyDigest(workspace.daily_digest || {}),
-      renderAiResearchPipeline(workspace.ai_research_pipeline || {}),
       renderMarketSnapshot(workspace.market_snapshot || {}),
-      renderExecutionPanel(workspace.recommendation_views || []),
+      renderAiResearchPipeline(workspace.ai_research_pipeline || {}),
+      renderAgentTrace(workspace.agent_trace || []),
+    ].join("");
+    const eventsContent = [
       renderNewsSection(workspace.news_stream || {}),
       renderEvents(workspace.hotspot_events || []),
       renderEventReplay(workspace.hotspot_events || []),
       renderEventReplayDetail(currentEventReplay),
-      renderIndustries(workspace.industry_views || []),
+    ].join("");
+    const industriesContent = renderIndustries(workspace.industry_views || []);
+    const securitiesContent = [
+      renderExecutionPanel(workspace.recommendation_views || []),
       renderCandidates(workspace.candidate_stocks || []),
       renderRecommendations(workspace.recommendation_views || []),
       renderHistory(workspace.recommendation_history || []),
       renderRiskCards(workspace.risk_cards || []),
-      renderAgentTrace(workspace.agent_trace || []),
     ].join("");
-    const portfolioOnlyContent = [
+    const portfolioContent = [
       portfolioTerminal,
       renderPortfolioReplayDetail(currentPortfolioReplay),
     ].join("");
-    workspaceRoot.innerHTML = [
-      workspaceTopline,
-      '<div class="output-stack">',
-      pageMode === "portfolio" ? portfolioOnlyContent : fullContent,
-      "</div>"
-    ].join("");
+    workspaceRoot.innerHTML = pageMode === "portfolio"
+      ? renderWorkspaceView("portfolio", "Portfolio Control", "建议仓位、现金缓冲、风险预算与版本回放。", portfolioContent)
+      : [
+          renderWorkspaceView("overview", "Research Synthesis", "把最新事件、市场状态与领先建议压缩为日度决策摘要。", overviewContent),
+          renderWorkspaceView("events", "Event Intelligence", "从新闻聚类进入情景推演、证据链、催化剂和失效条件。", eventsContent),
+          renderWorkspaceView("industries", "Industry Transmission", "追踪事件影响如何沿产业链传导至利润集中环节。", industriesContent),
+          renderWorkspaceView("securities", "Security Selection", "按关联强度、AI 排名、技术确认与风险门槛筛选标的。", securitiesContent),
+          renderWorkspaceView("portfolio", "Portfolio Control", "建议仓位、现金缓冲、风险预算与版本回放。", portfolioContent),
+        ].join("");
     bindExecutionFilter();
     bindCandidateFilters();
     bindEventReplayButtons();
     bindPortfolioReplayButtons();
+    setActiveView(activeView, false);
+  }
+
+  function renderWorkspaceView(view, kicker, description, content) {
+    return '<section class="app-view workspace-view" data-view="' + escapeHtml(view) + '" hidden>' +
+      '<div class="view-heading"><div><p class="eyebrow">' + escapeHtml(kicker) + '</p><h3>' + escapeHtml(VIEW_TITLES[view] || "研究模块") + '</h3><p>' + escapeHtml(description) + '</p></div></div>' +
+      '<div class="output-stack">' + (content || '<div class="empty-state"><p>当前视图暂无数据。</p></div>') + '</div></section>';
+  }
+
+  function renderEmptyWorkspaceViews() {
+    const emptyCopy = '<div class="empty-state"><div><strong>尚未生成研究结果</strong><p>前往“数据与模型”配置观察池，或使用顶部按钮生成本地研究。</p></div></div>';
+    workspaceRoot.innerHTML = pageMode === "portfolio"
+      ? renderWorkspaceView("portfolio", "Portfolio Control", "建议仓位、现金缓冲、风险预算与版本回放。", emptyCopy)
+      : WORKSPACE_VIEWS.map(function (view) {
+          return renderWorkspaceView(view, "Research Workspace", "生成后将在此显示可追溯的结构化研究结果。", emptyCopy);
+        }).join("");
   }
 
   function renderCoreFocusPanel(workspace) {
@@ -845,14 +1038,29 @@
 
   function renderCandidates(candidates) {
     const filtered = (candidates || []).filter(matchesCandidateFilters);
-    return '<section class="output-card"><div class="execution-panel-head"><div><h3>候选股票池</h3><p class="inline-note">按直接受益、AI 排名前列、龙头/弹性、A股/港股快速过滤。</p></div>' + renderCandidateFilterControls() + '</div><div class="scorecard-grid">' + filtered.slice(0, 24).map(function (item) {
-      return '<article class="scorecard"><div class="score-head"><strong>' + escapeHtml(item.name) + " (" + escapeHtml(item.symbol) + ')</strong><span class="score-badge">' + escapeHtml(String(item.match_score)) + '/100</span></div><p>' + escapeHtml(item.rationale || "") + '</p><dl><dt>映射类型</dt><dd>' + escapeHtml(item.linkage_type || "") + '</dd><dt>AI 受益排序</dt><dd>' + escapeHtml(item.ai_beneficiary_rank ? ('第 ' + item.ai_beneficiary_rank + ' 位 / ' + (item.ai_beneficiary_level || '')) : '未进入 AI 排序前列') + '</dd><dt>产业位置</dt><dd>' + escapeHtml((item.direct_nodes || []).join("、")) + '</dd><dt>近期跟踪</dt><dd>' + escapeHtml((item.recent_vectors || []).join("、")) + "</dd></dl></article>";
-    }).join("") + "</div></section>";
+    const rows = filtered.slice(0, 24).map(function (item) {
+      const rank = item.ai_beneficiary_rank
+        ? ('第 ' + item.ai_beneficiary_rank + ' 位 / ' + (item.ai_beneficiary_level || ''))
+        : '未进入前列';
+      return '<tr>' +
+        '<td data-label="标的"><strong>' + escapeHtml(item.name || item.symbol) + '</strong><small>' + escapeHtml(item.symbol || '') + '</small></td>' +
+        '<td data-label="市场">' + escapeHtml(item.market || '未知') + '</td>' +
+        '<td data-label="映射类型">' + escapeHtml(item.linkage_type || '待判断') + '</td>' +
+        '<td data-label="匹配分" class="numeric"><span class="score-badge">' + escapeHtml(String(item.match_score != null ? item.match_score : 'n/a')) + '</span></td>' +
+        '<td data-label="AI 排名">' + escapeHtml(rank) + '</td>' +
+        '<td data-label="产业位置">' + escapeHtml((item.direct_nodes || []).join('、') || '待映射') + '</td>' +
+        '<td data-label="核心依据">' + escapeHtml(item.rationale || '暂无结构化依据') + '</td>' +
+        '</tr>';
+    }).join("");
+    const table = rows
+      ? '<div class="data-table-shell"><table class="securities-table"><thead><tr><th>标的</th><th>市场</th><th>映射类型</th><th>匹配分</th><th>AI 排名</th><th>产业位置</th><th>核心依据</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+      : '<div class="empty-state"><p>当前筛选条件下没有候选标的。</p></div>';
+    return '<section class="output-card"><div class="execution-panel-head"><div><h3>候选股票池</h3><p class="inline-note">高密度比较关联强度、AI 排名、产业位置和证据。</p></div>' + renderCandidateFilterControls("candidate") + '</div>' + table + '</section>';
   }
 
   function renderRecommendations(recommendations) {
     const filtered = (recommendations || []).filter(matchesCandidateFilters);
-    return '<section class="output-card"><div class="execution-panel-head"><div><h3>个股建议</h3><p class="inline-note">和候选池共享同一组强筛选，方便快速聚焦高质量标的。</p></div>' + renderCandidateFilterControls() + '</div><div class="scorecard-grid recommendation-grid">' + filtered.map(function (item) {
+    return '<section class="output-card"><div class="execution-panel-head"><div><h3>个股建议</h3><p class="inline-note">先读动作、评分、价格窗口与核心逻辑，再按需展开证据。</p></div>' + renderCandidateFilterControls("recommendation") + '</div><div class="recommendation-list">' + filtered.map(function (item) {
       const technical = item.technical_overlay || {};
       const price = item.price_snapshot || {};
       const valuation = item.valuation_snapshot || {};
@@ -875,7 +1083,15 @@
         analystSignals.technical_analyst ? "技术 " + analystSignals.technical_analyst.score : null,
         analystSignals.risk_analyst ? "风险 " + analystSignals.risk_analyst.score : null
       ].filter(Boolean).join(" / ");
-      return '<article class="scorecard execution-card"><div class="score-head"><strong>' + escapeHtml(item.name) + " [" + escapeHtml(item.market || "未知市场") + "] (" + escapeHtml(item.symbol) + ')</strong><div class="mini-meta"><span class="tone-badge tone-' + escapeHtml(actionTone(item.action)) + '">' + escapeHtml(item.action) + '</span><span class="score-badge">' + escapeHtml(String(displayScore)) + '/100</span></div></div><p>' + escapeHtml(item.core_logic || "") + '</p><div class="manager-box"><strong>Manager</strong><p>' + escapeHtml(item.manager_summary || "") + '</p><p>' + escapeHtml(analystSummary || "暂无分析器打分") + '</p><p>' + escapeHtml(riskScore.reason || "") + '</p>' + (managerRationale.length ? ('<details class=\"manager-rationale\"><summary>查看详细打分解释</summary><div class=\"manager-rationale-list\">' + managerRationale.map(function (line) { return '<p>' + escapeHtml(line) + '</p>'; }).join('') + '</div></details>') : '') + '</div>' + renderDecisionVerdictCard(item, confidenceGate) + renderThesisConditionsCard(item, confidenceGate) + renderCompanyProfileBlock(companyProfile) + '<dl><dt>催化剂</dt><dd>' + escapeHtml((item.catalysts || []).join("、")) + '</dd><dt>风险</dt><dd>' + escapeHtml((item.risks || []).join("、")) + '</dd><dt>利润重心</dt><dd>' + escapeHtml(item.profit_focus_summary || "未生成") + '</dd><dt>AI 受益排序</dt><dd>' + escapeHtml(item.ai_beneficiary_rank ? ('第 ' + item.ai_beneficiary_rank + ' 位 / ' + (item.ai_beneficiary_level || '') + ' / 加权 +' + String(item.ai_beneficiary_boost || 0) + ' / ' + (item.ai_ranking_rationale || '')) : '未进入 AI 排序前列') + '</dd><dt>新颖度 / 拥挤度</dt><dd>' + escapeHtml((crowdingPenalty.penalty ? ('惩罚 ' + String(crowdingPenalty.penalty) + ' 分') : '近期未见明显拥挤') + ' / ' + (crowdingPenalty.reason || '')) + '</dd><dt>来源多样性</dt><dd>' + escapeHtml(String(item.source_diversity_score || "n/a")) + '/100 / ' + escapeHtml(item.source_diversity_label || "未生成") + '</dd><dt>证据结构</dt><dd>' + escapeHtml(item.source_diversity_detail || "未生成") + '</dd><dt>覆盖提示</dt><dd>' + escapeHtml(item.coverage_gap_warning || "暂无明显覆盖缺口") + '</dd><dt>目标空间</dt><dd>' + escapeHtml(String(item.target_return_pct)) + '% / ' + escapeHtml(item.odds_label || "") + '</dd><dt>昨日收盘价</dt><dd>' + escapeHtml(executionPlan.status === 'ok' ? String(executionPlan.yesterday_close) : (executionPlan.reason || '未生成')) + '</dd><dt>建议买入价</dt><dd>' + escapeHtml(executionPlan.status === 'ok' && executionPlan.suggested_buy_price != null ? String(executionPlan.suggested_buy_price) : '不适用') + '</dd><dt>建议卖出价</dt><dd>' + escapeHtml(executionPlan.status === 'ok' && executionPlan.suggested_sell_price != null ? String(executionPlan.suggested_sell_price) : '不适用') + '</dd><dt>价格快照</dt><dd>' + escapeHtml(price.latest_price != null ? ("现价 " + price.latest_price + " / 日涨跌 " + price.day_change_pct + "% / 20日位置 " + price.position_20d_pct + "%") : (price.reason || "未生成")) + '</dd><dt>估值快照</dt><dd>' + escapeHtml(valuation.pe_ttm != null ? ("PE " + valuation.pe_ttm + " / PB " + valuation.pb + " / MV " + valuation.total_mv) : (valuation.reason || "未生成")) + '</dd><dt>财务快照</dt><dd>' + escapeHtml(fundamental.roe_dt != null ? ("ROE " + fundamental.roe_dt + " / 营收YoY " + fundamental.revenue_yoy + " / 利润YoY " + fundamental.netprofit_yoy) : (fundamental.reason || "未生成")) + '</dd><dt>市场分 / 基本面分 / 受益排序分 / 风险分</dt><dd>' + escapeHtml(String(marketScore.score || "n/a") + " / " + String(fundamentalScore.score || "n/a") + " / " + String((analystSignals.beneficiary_analyst || {}).score || "n/a") + " / " + String(riskScore.score || "n/a")) + '</dd><dt>失效条件</dt><dd>' + escapeHtml((item.invalidation_conditions || []).join("、")) + '</dd><dt>技术确认</dt><dd>' + escapeHtml("评分 " + String(technical.technical_score || "n/a") + " / " + (technical.trend_alignment || "未生成")) + '</dd><dt>执行窗口</dt><dd>' + escapeHtml((technical.entry_window || "未生成") + " / 止损参考：" + (technical.stop_reference || "未生成")) + '</dd><dt>确认信号</dt><dd>' + escapeHtml((technical.confirmation_signals || []).join("、")) + '</dd><dt>警告信号</dt><dd>' + escapeHtml((technical.warning_signals || []).join("、")) + '</dd><dt>技术 Provider</dt><dd>' + escapeHtml((technical.provider || "unknown") + " / " + (technical.provider_status || "unknown")) + "</dd></dl></article>";
+      const priceWindow = executionPlan.status === "ok"
+        ? ("买 " + String(executionPlan.suggested_buy_price != null ? executionPlan.suggested_buy_price : "待定") + " / 卖 " + String(executionPlan.suggested_sell_price != null ? executionPlan.suggested_sell_price : "待定"))
+        : (technical.entry_window || "等待价格确认");
+      return '<details class="recommendation-item tone-' + escapeHtml(actionTone(item.action)) + '"><summary>' +
+        '<span class="recommendation-summary-title"><strong>' + escapeHtml(item.name) + '</strong><small>' + escapeHtml((item.market || "未知市场") + " · " + item.symbol) + '</small></span>' +
+        '<span class="mini-meta"><span class="tone-badge tone-' + escapeHtml(actionTone(item.action)) + '">' + escapeHtml(item.action) + '</span><span class="score-badge">' + escapeHtml(String(displayScore)) + '/100</span></span>' +
+        '<span class="recommendation-summary-window">' + escapeHtml(priceWindow) + '</span>' +
+        '<span class="recommendation-summary-logic">' + escapeHtml(item.core_logic || "暂无核心逻辑") + '</span></summary>' +
+        '<div class="recommendation-detail"><div class="manager-box"><strong>Manager</strong><p>' + escapeHtml(item.manager_summary || "") + '</p><p>' + escapeHtml(analystSummary || "暂无分析器打分") + '</p><p>' + escapeHtml(riskScore.reason || "") + '</p>' + (managerRationale.length ? ('<details class=\"manager-rationale\"><summary>查看详细打分解释</summary><div class=\"manager-rationale-list\">' + managerRationale.map(function (line) { return '<p>' + escapeHtml(line) + '</p>'; }).join('') + '</div></details>') : '') + '</div>' + renderDecisionVerdictCard(item, confidenceGate) + renderThesisConditionsCard(item, confidenceGate) + renderCompanyProfileBlock(companyProfile) + '<dl><dt>催化剂</dt><dd>' + escapeHtml((item.catalysts || []).join("、")) + '</dd><dt>风险</dt><dd>' + escapeHtml((item.risks || []).join("、")) + '</dd><dt>利润重心</dt><dd>' + escapeHtml(item.profit_focus_summary || "未生成") + '</dd><dt>AI 受益排序</dt><dd>' + escapeHtml(item.ai_beneficiary_rank ? ('第 ' + item.ai_beneficiary_rank + ' 位 / ' + (item.ai_beneficiary_level || '') + ' / 加权 +' + String(item.ai_beneficiary_boost || 0) + ' / ' + (item.ai_ranking_rationale || '')) : '未进入 AI 排序前列') + '</dd><dt>新颖度 / 拥挤度</dt><dd>' + escapeHtml((crowdingPenalty.penalty ? ('惩罚 ' + String(crowdingPenalty.penalty) + ' 分') : '近期未见明显拥挤') + ' / ' + (crowdingPenalty.reason || '')) + '</dd><dt>来源多样性</dt><dd>' + escapeHtml(String(item.source_diversity_score || "n/a")) + '/100 / ' + escapeHtml(item.source_diversity_label || "未生成") + '</dd><dt>证据结构</dt><dd>' + escapeHtml(item.source_diversity_detail || "未生成") + '</dd><dt>覆盖提示</dt><dd>' + escapeHtml(item.coverage_gap_warning || "暂无明显覆盖缺口") + '</dd><dt>目标空间</dt><dd>' + escapeHtml(String(item.target_return_pct)) + '% / ' + escapeHtml(item.odds_label || "") + '</dd><dt>昨日收盘价</dt><dd>' + escapeHtml(executionPlan.status === 'ok' ? String(executionPlan.yesterday_close) : (executionPlan.reason || '未生成')) + '</dd><dt>建议买入价</dt><dd>' + escapeHtml(executionPlan.status === 'ok' && executionPlan.suggested_buy_price != null ? String(executionPlan.suggested_buy_price) : '不适用') + '</dd><dt>建议卖出价</dt><dd>' + escapeHtml(executionPlan.status === 'ok' && executionPlan.suggested_sell_price != null ? String(executionPlan.suggested_sell_price) : '不适用') + '</dd><dt>价格快照</dt><dd>' + escapeHtml(price.latest_price != null ? ("现价 " + price.latest_price + " / 日涨跌 " + price.day_change_pct + "% / 20日位置 " + price.position_20d_pct + "%") : (price.reason || "未生成")) + '</dd><dt>估值快照</dt><dd>' + escapeHtml(valuation.pe_ttm != null ? ("PE " + valuation.pe_ttm + " / PB " + valuation.pb + " / MV " + valuation.total_mv) : (valuation.reason || "未生成")) + '</dd><dt>财务快照</dt><dd>' + escapeHtml(fundamental.roe_dt != null ? ("ROE " + fundamental.roe_dt + " / 营收YoY " + fundamental.revenue_yoy + " / 利润YoY " + fundamental.netprofit_yoy) : (fundamental.reason || "未生成")) + '</dd><dt>市场分 / 基本面分 / 受益排序分 / 风险分</dt><dd>' + escapeHtml(String(marketScore.score || "n/a") + " / " + String(fundamentalScore.score || "n/a") + " / " + String((analystSignals.beneficiary_analyst || {}).score || "n/a") + " / " + String(riskScore.score || "n/a")) + '</dd><dt>失效条件</dt><dd>' + escapeHtml((item.invalidation_conditions || []).join("、")) + '</dd><dt>技术确认</dt><dd>' + escapeHtml("评分 " + String(technical.technical_score || "n/a") + " / " + (technical.trend_alignment || "未生成")) + '</dd><dt>执行窗口</dt><dd>' + escapeHtml((technical.entry_window || "未生成") + " / 止损参考：" + (technical.stop_reference || "未生成")) + '</dd><dt>确认信号</dt><dd>' + escapeHtml((technical.confirmation_signals || []).join("、")) + '</dd><dt>警告信号</dt><dd>' + escapeHtml((technical.warning_signals || []).join("、")) + '</dd><dt>技术 Provider</dt><dd>' + escapeHtml((technical.provider || "unknown") + " / " + (technical.provider_status || "unknown")) + "</dd></dl></div></details>";
     }).join("") + "</div></section>";
   }
 
@@ -940,12 +1156,13 @@
     return '<div class="verdict-box"><strong>最终决策结论</strong><p>' + escapeHtml(verdict) + '</p><p>' + escapeHtml('利润重心：' + (item.profit_focus_summary || '未生成') + '；AI 排名：' + (item.ai_beneficiary_rank ? ('第 ' + item.ai_beneficiary_rank + ' 位') : '未进入前列') + '；门槛状态：' + (confidenceGate && confidenceGate.high_confidence_eligible ? '已通过' : '未通过')) + '</p></div>';
   }
 
-  function renderCandidateFilterControls() {
+  function renderCandidateFilterControls(scope) {
+    const prefix = escapeHtml(scope || "candidate");
     return '<div class="candidate-filter-bar">' +
-      '<select id="filter-benefit"><option value="all">全部受益</option><option value="direct">直接受益</option></select>' +
-      '<select id="filter-ai-rank"><option value="all">全部 AI 排名</option><option value="top">AI 前10</option></select>' +
-      '<select id="filter-linkage"><option value="all">全部类型</option><option value="leader">龙头</option><option value="elastic">弹性</option></select>' +
-      '<select id="filter-market"><option value="all">全部市场</option><option value="A股">A股</option><option value="港股">港股</option></select>' +
+      '<select id="filter-' + prefix + '-benefit" data-candidate-filter="benefit" aria-label="受益关系筛选"><option value="all">全部受益</option><option value="direct">直接受益</option></select>' +
+      '<select id="filter-' + prefix + '-ai-rank" data-candidate-filter="aiRank" aria-label="AI 排名筛选"><option value="all">全部 AI 排名</option><option value="top">AI 前10</option></select>' +
+      '<select id="filter-' + prefix + '-linkage" data-candidate-filter="linkage" aria-label="映射类型筛选"><option value="all">全部类型</option><option value="leader">龙头</option><option value="elastic">弹性</option></select>' +
+      '<select id="filter-' + prefix + '-market" data-candidate-filter="market" aria-label="市场筛选"><option value="all">全部市场</option><option value="A股">A股</option><option value="港股">港股</option></select>' +
       '</div>';
   }
 
@@ -1144,43 +1361,16 @@
   }
 
   function bindCandidateFilters() {
-    const benefit = document.getElementById("filter-benefit");
-    const aiRank = document.getElementById("filter-ai-rank");
-    const linkage = document.getElementById("filter-linkage");
-    const market = document.getElementById("filter-market");
-    [benefit, aiRank, linkage, market].forEach(function (node) {
-      if (!node) {
-        return;
-      }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-candidate-filter]"), function (node) {
+      const filterName = node.dataset.candidateFilter;
+      node.value = candidateFilters[filterName] || "all";
+      node.addEventListener("change", function () {
+        candidateFilters[filterName] = node.value;
+        if (currentWorkspace) {
+          renderWorkspace(currentWorkspace);
+        }
+      });
     });
-    if (benefit) {
-      benefit.value = candidateFilters.benefit;
-      benefit.addEventListener("change", function () {
-        candidateFilters.benefit = benefit.value;
-        if (currentWorkspace) { renderWorkspace(currentWorkspace); }
-      });
-    }
-    if (aiRank) {
-      aiRank.value = candidateFilters.aiRank;
-      aiRank.addEventListener("change", function () {
-        candidateFilters.aiRank = aiRank.value;
-        if (currentWorkspace) { renderWorkspace(currentWorkspace); }
-      });
-    }
-    if (linkage) {
-      linkage.value = candidateFilters.linkage;
-      linkage.addEventListener("change", function () {
-        candidateFilters.linkage = linkage.value;
-        if (currentWorkspace) { renderWorkspace(currentWorkspace); }
-      });
-    }
-    if (market) {
-      market.value = candidateFilters.market;
-      market.addEventListener("change", function () {
-        candidateFilters.market = market.value;
-        if (currentWorkspace) { renderWorkspace(currentWorkspace); }
-      });
-    }
   }
 
   function updateStageSummary(workspace) {
@@ -1485,6 +1675,7 @@
 
   function setStatus(text) {
     settingsStatus.textContent = text;
+    showToast(text, text.indexOf("失败") !== -1 || text.indexOf("出错") !== -1);
   }
 
   function directionLabel(direction) {
