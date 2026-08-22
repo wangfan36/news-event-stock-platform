@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from typing import Any
 
 from .model_client import _chat_completion, _extract_json
@@ -138,7 +139,7 @@ def build_ai_research_pipeline(
         return _disabled_pipeline("disabled", "未启用模型增强，AI 研究链未执行。")
 
     provider = str(model_settings.get("provider", "openai-compatible") or "openai-compatible").strip()
-    api_key = str(model_settings.get("api_key", "")).strip()
+    api_key = str(model_settings.get("api_key", "") or os.getenv("NEWS_ALPHA_API_KEY", "")).strip()
     base_url = str(model_settings.get("base_url", "")).strip()
     model_name = str(model_settings.get("model_name", "")).strip()
     if provider == "codex-cli":
@@ -152,6 +153,9 @@ def build_ai_research_pipeline(
     else:
         news_limit = 4
         company_pool_limit = len(company_pool)
+
+    # Keep every AI stage on the same resolved credential without exposing it in output.
+    model_settings = {**model_settings, "api_key": api_key}
 
     news_context = [
         {

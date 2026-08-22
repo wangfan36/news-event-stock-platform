@@ -59,9 +59,9 @@ URL | 名称 | 区域 | 市场 | 来源类型
 https://example.com/feed.xml | Example News | 全球 | A股+港股 | 财经媒体
 ```
 
-只有 URL 必填。分隔符 `|` 两侧可以有空格；空行与 `#` 开头的注释行会忽略；重复 URL 只保留第一条。完整规范见 [RSS 与模型配置](docs/rss-and-models.md)。
+只有 URL 必填。分隔符 `|` 两侧可以有空格；空行与 `#` 开头的注释行会忽略；重复 URL 只保留第一条。请在 **数据与模型设置 > RSS 源** 中添加，保存全部配置后刷新数据。校验规则和排错方法见 [完整 RSS 与模型配置指南](docs/rss-and-models.zh-CN.md)。
 
-大模型不是决策源，只能在不修改动作方向的前提下补充或润色结构化文本。支持 OpenAI 兼容接口；推荐通过 `NEWS_ALPHA_API_KEY` 环境变量提供密钥。
+大模型不是决策源，只能在不修改动作方向的前提下补充或润色结构化文本。系统支持 OpenAI 兼容接口和 Codex CLI。请勿把密钥写入源码，推荐在启动环境中设置 `NEWS_ALPHA_API_KEY`，且绝不能把真实密钥提交到 `.env.example`。
 
 ## 工作原理
 
@@ -103,6 +103,7 @@ python -m pip install -e ".[market]"
 ```bash
 python -m pytest
 ruff check news_alpha tests scripts
+python scripts/check_secrets.py
 python scripts/check_local_app.py
 ```
 

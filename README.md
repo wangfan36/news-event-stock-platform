@@ -59,9 +59,9 @@ URL | Name | Region | Market | Source Type
 https://example.com/feed.xml | Example News | Global | A-share+Hong Kong | Financial Media
 ```
 
-Only the URL is required. Spaces around `|` are allowed. Blank lines and lines beginning with `#` are ignored, and duplicate URLs keep only the first entry. See [RSS and model configuration](docs/rss-and-models.md) for the full specification.
+Only the URL is required. Spaces around `|` are allowed. Blank lines and lines beginning with `#` are ignored, and duplicate URLs keep only the first entry. Add sources under **Data & Models > RSS Sources**, then save the configuration and refresh data. See the [complete RSS and model setup guide](docs/rss-and-models.md) for validation rules and troubleshooting.
 
-The language model is not the decision source. It may only enrich or refine structured text without changing the rule engine's action direction. OpenAI-compatible endpoints are supported; use the `NEWS_ALPHA_API_KEY` environment variable for the API key whenever possible.
+The language model is not the decision source. It may only enrich or refine structured text without changing the rule engine's action direction. OpenAI-compatible endpoints and Codex CLI are supported. Keep keys out of source files and set `NEWS_ALPHA_API_KEY` in the launch environment whenever possible; never commit a real key to `.env.example`.
 
 ## How It Works
 
@@ -103,6 +103,7 @@ python -m pip install -e ".[market]"
 ```bash
 python -m pytest
 ruff check news_alpha tests scripts
+python scripts/check_secrets.py
 python scripts/check_local_app.py
 ```
 

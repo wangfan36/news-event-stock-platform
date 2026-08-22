@@ -303,7 +303,12 @@ def parse_custom_rss_sources(raw_text: str) -> list[dict[str, str]]:
         parts = [part.strip() for part in value.split("|")]
         url = parts[0]
         parsed_url = urllib.parse.urlparse(url)
-        if parsed_url.scheme not in {"http", "https"} or not parsed_url.netloc or url in seen_urls:
+        if (
+            parsed_url.scheme not in {"http", "https"}
+            or not parsed_url.netloc
+            or any(character.isspace() for character in url)
+            or url in seen_urls
+        ):
             continue
         seen_urls.add(url)
         label = parts[1] if len(parts) >= 2 and parts[1] else f"Custom RSS {index}"

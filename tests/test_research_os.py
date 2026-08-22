@@ -467,6 +467,35 @@ def test_ai_pipeline_short_circuits_on_quota_error(monkeypatch) -> None:
     assert status["disabled_count"] == 4
 
 
+def test_ai_pipeline_uses_environment_api_key(monkeypatch) -> None:
+    received: dict[str, str] = {}
+
+    def _capture_key(base_url, api_key, *args, **kwargs):
+        received["api_key"] = api_key
+        return "{}"
+
+    monkeypatch.setenv("NEWS_ALPHA_API_KEY", "environment-key-for-test")
+    monkeypatch.setattr(ai_pipeline_module, "_chat_completion", _capture_key)
+
+    pipeline = ai_pipeline_module.build_ai_research_pipeline(
+        news_items=[{"news_id": "n1", "headline": "headline", "summary": "summary"}],
+        watchlist=tuple(),
+        focus_topics=tuple(),
+        personal_notes="",
+        company_pool=[],
+        model_settings={
+            "enabled": True,
+            "provider": "openai-compatible",
+            "base_url": "https://example.com/v1",
+            "model_name": "example-model",
+            "api_key": "",
+        },
+    )
+
+    assert received["api_key"] == "environment-key-for-test"
+    assert pipeline["status"] == "partial"
+
+
 def test_ai_pipeline_rejects_corrupted_question_mark_text(monkeypatch) -> None:
     monkeypatch.setattr(
         ai_pipeline_module,
