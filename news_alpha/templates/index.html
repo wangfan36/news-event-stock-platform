@@ -1,337 +1,212 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark" data-font-scale="standard" data-density="comfortable">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark light">
     <title>{% if page_mode == "portfolio" %}组合终端{% else %}新闻驱动选股系统{% endif %}</title>
+    <script>
+      (function () {
+        try {
+          var root = document.documentElement;
+          root.dataset.theme = localStorage.getItem("news-alpha-theme") || "dark";
+          root.dataset.fontScale = localStorage.getItem("news-alpha-font-scale") || "standard";
+          root.dataset.density = localStorage.getItem("news-alpha-density") || "comfortable";
+        } catch (error) {
+          // Local storage may be unavailable in hardened browser profiles.
+        }
+      }());
+    </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
   </head>
-  <body>
+  <body data-page-mode="{{ page_mode }}">
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
     <div class="app-shell">
-      <aside class="sidebar">
+      <aside class="sidebar" id="app-sidebar" aria-label="主导航">
         <div class="sidebar-brand">
-          <div class="brand-mark">NS</div>
+          <div class="brand-mark" aria-hidden="true">NA</div>
           <div>
-            <div class="eyebrow">Local Research Console</div>
-            <h1 class="app-title">新闻驱动选股系统</h1>
+            <div class="eyebrow">News Alpha</div>
+            <h1 class="app-title">研究终端</h1>
+          </div>
+          <button id="nav-close" class="icon-button nav-close" type="button" aria-label="关闭导航">关闭</button>
+        </div>
+
+        <nav class="primary-nav" aria-label="研究模块">
+          <a href="/#overview" data-nav-view="overview">
+            <span>总览</span><small>今日研究摘要</small>
+          </a>
+          <a href="/#events" data-nav-view="events">
+            <span>事件研究</span><small>新闻、推演与证据</small>
+          </a>
+          <a href="/#industries" data-nav-view="industries">
+            <span>产业链</span><small>影响与利润传导</small>
+          </a>
+          <a href="/#securities" data-nav-view="securities">
+            <span>标的建议</span><small>候选、评分与执行</small>
+          </a>
+          <a href="/portfolio#portfolio" data-nav-view="portfolio">
+            <span>组合终端</span><small>仓位、预算与回放</small>
+          </a>
+          <a href="/#history" data-nav-view="history">
+            <span>历史回放</span><small>运行、事件与公司</small>
+          </a>
+          <a href="/#settings" data-nav-view="settings">
+            <span>数据与模型</span><small>RSS、API 与风控</small>
+          </a>
+        </nav>
+
+        <div class="sidebar-section">
+          <p class="panel-label">研究工具</p>
+          <div class="utility-actions">
+            <button id="load-demo" type="button" class="secondary">载入示例观察池</button>
+            <button id="refresh-history" type="button" class="secondary">刷新历史记录</button>
+            <button id="export-markdown" type="button" class="secondary">导出 Markdown</button>
+            <button id="export-json" type="button" class="secondary">导出 JSON</button>
           </div>
         </div>
 
-        <div class="sidebar-panel">
-          <p class="panel-label">运行模式</p>
-          <div class="sidebar-badges">
-            <span>本地部署</span>
-            <span>盘中 + 日度双节奏</span>
-            <span>A股 + 港股</span>
+        <div class="sidebar-footer">
+          <div class="system-state">
+            <span class="status-indicator" aria-hidden="true"></span>
+            <div><strong>本地研究模式</strong><small>盘中 + 日度双节奏 · A股 + 港股</small></div>
           </div>
-          <p class="sidebar-note">当前前台优先服务个人本地使用，不强调营销展示，而是强调可持续操作与回放。</p>
-        </div>
-
-        <div class="sidebar-panel">
-          <p class="panel-label">快速操作</p>
-          <div class="action-stack">
-            <a href="/" class="ghost action-link">研究工作台</a>
-            <a href="/portfolio" class="ghost action-link">组合终端</a>
-            <button id="load-demo" type="button" class="primary">载入示例观察池</button>
-            <button id="generate-demo" type="button" class="ghost">立即生成一次</button>
-            <button id="refresh-data" type="button" class="ghost">更新最近交易日数据</button>
-            <button id="save-settings" type="button" class="ghost">保存数据源与模型配置</button>
-            <button id="refresh-history" type="button" class="ghost">刷新历史记录</button>
-            <button id="export-markdown" type="button" class="ghost">导出 Markdown</button>
-            <button id="export-json" type="button" class="ghost">导出 JSON</button>
-          </div>
-        </div>
-
-        <div class="sidebar-panel">
-          <div class="panel-head">
-            <p class="panel-label">本地历史</p>
-            <div class="panel-head-actions">
-              <span id="history-count" class="mini-pill">0 runs</span>
-              <button id="clear-history" type="button" class="ghost small-button">清空</button>
-            </div>
-          </div>
-          <div class="history-filters">
-            <label class="field">
-              <span>视角</span>
-              <select id="history-mode-input">
-                <option value="run">按运行</option>
-                <option value="event">按事件</option>
-                <option value="company">按公司</option>
-                <option value="date">按日期</option>
-              </select>
-            </label>
-            <label class="field">
-              <span>关键词</span>
-              <input id="history-search-input" type="text" placeholder="事件 / 标的关键词">
-            </label>
-            <div class="two-col-grid">
-              <label class="field">
-                <span>开始日期</span>
-                <input id="history-date-from-input" type="date">
-              </label>
-              <label class="field">
-                <span>结束日期</span>
-                <input id="history-date-to-input" type="date">
-              </label>
-            </div>
-          </div>
-          <div id="history-list" class="history-list">
-            <div class="history-empty">还没有本地运行记录。</div>
-          </div>
-        </div>
-
-        <div class="sidebar-panel">
-          <p class="panel-label">系统说明</p>
-          <div class="meta-list">
-            <div>
-              <span>合规边界</span>
-              <strong>{{ overview.compliance_boundary }}</strong>
-            </div>
-            <div>
-              <span>数据面</span>
-              <strong>{{ overview.inputs|length }} 类输入 / {{ overview.outputs|length }} 类输出</strong>
-            </div>
-            <div>
-              <span>内部实验</span>
-              <strong>{{ lab_snapshot.note }}</strong>
-            </div>
-          </div>
+          <p>{{ overview.compliance_boundary }}</p>
         </div>
       </aside>
 
-      <main class="main-stage">
-        <header class="stage-header">
-          <div>
-            <div class="eyebrow">Workspace</div>
-            <h2>{% if page_mode == "portfolio" %}组合终端{% else %}本地研究工作台{% endif %}</h2>
-            <p class="stage-copy">
-              {% if page_mode == "portfolio" %}
-              聚合仓位建议、风险预算、主题暴露、组合回放和组合版本对比，优先服务组合层决策。
-              {% else %}
-              先配置你自己的 RSS 和模型，再导入观察池、主题偏好和研究笔记，系统会在本地生成热点事件、产业链映射和个股建议。
-              {% endif %}
-            </p>
-            <div class="runtime-strip">
-              <div class="runtime-card runtime-card-action">
-                <span>数据刷新</span>
-                <button id="refresh-data-inline" type="button" class="primary runtime-action-button">刷新数据</button>
-                <p class="inline-note">同时刷新股票数据和新闻数据。</p>
-              </div>
-              <div class="runtime-card">
-                <span>股价数据截止日</span>
-                <strong id="runtime-stock-as-of">载入中...</strong>
-                <p id="runtime-stock-note" class="inline-note">载入中...</p>
-              </div>
-              <div class="runtime-card">
-                <span>新闻数据截止日</span>
-                <strong id="runtime-news-as-of">载入中...</strong>
-                <p id="runtime-news-note" class="inline-note">载入中...</p>
-              </div>
-              <div class="runtime-card">
-                <span>最近生成 / 历史数量</span>
-                <strong id="runtime-latest-generated">载入中...</strong>
-                <p id="runtime-history-count" class="inline-note">载入中...</p>
-              </div>
-              <div class="runtime-card runtime-card-wide">
-                <span>数据库</span>
-                <strong id="runtime-database-path">载入中...</strong>
-                <p class="inline-note">本地 SQLite 历史库路径，仅用于研究记录与回放。</p>
-              </div>
+      <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+
+      <main class="main-stage" id="main-content" tabindex="-1">
+        <header class="terminal-bar">
+          <div class="terminal-context">
+            <button id="nav-toggle" class="icon-button nav-toggle" type="button" aria-controls="app-sidebar" aria-expanded="false">导航</button>
+            <div>
+              <p class="eyebrow">Institutional Research Workspace</p>
+              <h2 id="active-view-title">{% if page_mode == "portfolio" %}组合终端{% else %}研究总览{% endif %}</h2>
             </div>
           </div>
-          <div class="stage-summary">
-            <div class="summary-card">
-              <span>最新事件</span>
-              <strong id="runtime-top-event">载入中...</strong>
-              <p id="runtime-top-event-note" class="summary-note">等待工作台或历史状态。</p>
-            </div>
-            <div class="summary-card">
-              <span>领先建议</span>
-              <strong id="runtime-top-recommendation">载入中...</strong>
-              <p id="runtime-top-recommendation-note" class="summary-note">等待工作台或历史状态。</p>
-            </div>
-            <div class="summary-card">
-              <span>历史版本</span>
-              <strong id="runtime-history-summary">载入中...</strong>
-              <p id="runtime-history-summary-note" class="summary-note">等待工作台或历史状态。</p>
-            </div>
+          <div class="terminal-actions">
+            <button id="refresh-data" type="button" class="secondary">刷新数据</button>
+            <button id="generate-demo" type="button" class="primary">生成研究</button>
           </div>
         </header>
 
-        <section class="rss-preview-shell">
-          <div class="workspace-head">
-            <div class="section-head">
-              <p>新闻速览</p>
-              <h3>RSS 推送标题</h3>
-            </div>
-            <div class="workspace-badges">
-              <span>刷新后可看</span>
-              <span>支持原文</span>
-            </div>
+        <section class="preference-bar" aria-label="阅读设置">
+          <div class="market-clock">
+            <span>股价数据</span><strong id="runtime-stock-as-of">载入中...</strong>
+            <span>新闻数据</span><strong id="runtime-news-as-of">载入中...</strong>
           </div>
-          <div id="runtime-rss-list" class="runtime-rss-list">
-            <div class="history-empty">刷新数据后，这里会显示最新 RSS 推送标题。</div>
+          <div class="reading-controls">
+            <label><span>主题</span><select id="theme-select" aria-label="主题"><option value="dark">深色终端</option><option value="light">柔和浅色</option></select></label>
+            <label><span>字号</span><select id="font-scale-select" aria-label="字号"><option value="standard">标准</option><option value="large">大号</option></select></label>
+            <label><span>密度</span><select id="density-select" aria-label="信息密度"><option value="comfortable">舒适</option><option value="compact">紧凑</option></select></label>
           </div>
         </section>
 
-        <section class="workspace-card">
-          <div class="workspace-head">
-            <div class="section-head">
-              <p>输出视图</p>
-              <h3>热点、事件、产业链、建议与回放</h3>
-            </div>
-            <div class="workspace-badges">
-              <span>热点总览</span>
-              <span>事件推演</span>
-              <span>产业链</span>
-              <span>建议卡</span>
-              <span>历史回放</span>
-            </div>
+        <section class="app-view overview-static" data-view="overview" aria-labelledby="overview-heading">
+          <div class="view-heading">
+            <div><p class="eyebrow">Daily Briefing</p><h3 id="overview-heading">研究总览</h3><p>先确认数据时效，再阅读核心事件、领先标的和首要风险。</p></div>
+            <button id="refresh-data-inline" type="button" class="secondary">同步最新数据</button>
           </div>
-          <div id="workspace-root" class="workspace-root">
-            <div class="empty-state">
-              <p>导入观察池后，这里会生成完整的本地研究视图。</p>
-              <ul>
-                <li>热点事件流</li>
-                <li>事件详情与失效条件</li>
-                <li>产业链分析</li>
-                <li>候选股票池</li>
-                <li>个股建议与历史版本</li>
-              </ul>
-            </div>
+
+          <div class="runtime-grid" aria-label="运行状态">
+            <article class="runtime-card"><span>股价截止日</span><strong id="runtime-stock-note">载入中...</strong></article>
+            <article class="runtime-card"><span>新闻状态</span><strong id="runtime-news-note">载入中...</strong></article>
+            <article class="runtime-card"><span>最近生成</span><strong id="runtime-latest-generated">载入中...</strong><small id="runtime-history-count">载入中...</small></article>
+            <article class="runtime-card runtime-card-wide"><span>本地数据库</span><strong id="runtime-database-path">载入中...</strong></article>
           </div>
+
+          <div class="stage-summary" aria-label="当前研究摘要">
+            <article class="summary-card"><span>最新事件</span><strong id="runtime-top-event">载入中...</strong><p id="runtime-top-event-note">等待工作台或历史状态。</p></article>
+            <article class="summary-card"><span>领先建议</span><strong id="runtime-top-recommendation">载入中...</strong><p id="runtime-top-recommendation-note">等待工作台或历史状态。</p></article>
+            <article class="summary-card"><span>历史版本</span><strong id="runtime-history-summary">载入中...</strong><p id="runtime-history-summary-note">等待工作台或历史状态。</p></article>
+          </div>
+
+          <section class="rss-preview-shell" aria-labelledby="rss-preview-heading">
+            <div class="section-heading-row"><div><p class="eyebrow">Live Headlines</p><h3 id="rss-preview-heading">RSS 新闻速览</h3></div><span class="data-note">支持跳转原文</span></div>
+            <div id="runtime-rss-list" class="runtime-rss-list"><div class="empty-inline">刷新数据后显示最新 RSS 标题。</div></div>
+          </section>
         </section>
 
-        <details class="config-shell">
-          <summary class="config-summary">展开或收起配置面板</summary>
-          <section class="control-grid">
-            <section class="control-card">
-              <div class="section-head">
-                <p>数据源设置</p>
-                <h3>自定义 RSS</h3>
-              </div>
-              <label class="field">
-                <span>RSS 源列表</span>
-                <textarea id="rss-sources-input" rows="6" placeholder="每行一条：URL | 名称 | 区域 | 市场&#10;https://example.com/rss | 我的宏观源 | 全球 | A股+港股"></textarea>
-              </label>
-              <p class="inline-note rss-spec">
-                格式规范：每行一个 RSS 源，使用 <code>|</code> 分隔，推荐格式为
-                <code>URL | 名称 | 区域 | 市场</code>。
-                例如：
-                <code>https://example.com/rss | 我的宏观源 | 全球 | A股+港股</code>。
-                URL 必须以 <code>http://</code> 或 <code>https://</code> 开头；
-                <code>|</code> 两侧可以有空格，系统会自动去掉；
-                名称、区域、市场可以留空；空行会自动忽略；一行只写一个 RSS 地址。
-              </p>
-              <label class="field checkbox-row">
-                <input id="live-news-input" type="checkbox">
-                <span>生成时优先抓取真实 RSS，失败自动回退到演示源</span>
-              </label>
-              <div class="two-col-grid">
-                <label class="field">
-                  <span>技术确认 Provider</span>
-                  <select id="technical-provider-input">
-                    <option value="mock">mock</option>
-                    <option value="akshare">akshare</option>
-                    <option value="tradingview-mcp">tradingview-mcp</option>
-                  </select>
-                </label>
-                <label class="field">
-                  <span>Bridge Endpoint</span>
-                  <input id="technical-endpoint-input" type="text" placeholder="可选，未来用于 tradingview-mcp bridge">
-                </label>
-              </div>
-              <div class="provider-status-card">
-                <span>当前技术确认状态</span>
-                <strong id="technical-provider-status">mock / idle</strong>
-                <p id="technical-provider-note" class="inline-note">保存设置或生成后，这里会显示当前 provider 与回退状态。</p>
-              </div>
-              <p class="inline-note">适合把你自己常用的行业资讯、宏观快讯、公司 RSS 都接进来。</p>
+        <div id="workspace-root" class="workspace-root" aria-live="polite">
+          <section class="app-view" data-view="{% if page_mode == 'portfolio' %}portfolio{% else %}overview{% endif %}">
+            <div class="empty-state"><div><strong>正在载入研究工作台</strong><p>系统将整理事件、产业链和标的建议。</p></div></div>
+          </section>
+        </div>
+
+        <section class="app-view history-view" data-view="history" aria-labelledby="history-heading" hidden>
+          <div class="view-heading">
+            <div><p class="eyebrow">Research Archive</p><h3 id="history-heading">历史回放</h3><p>按运行、事件、公司或日期复现当时的研究判断。</p></div>
+            <div class="heading-actions"><span id="history-count" class="count-badge">0 runs</span><button id="clear-history" type="button" class="danger-button">清空历史</button></div>
+          </div>
+          <div class="history-toolbar">
+            <label class="field"><span>视角</span><select id="history-mode-input"><option value="run">按运行</option><option value="event">按事件</option><option value="company">按公司</option><option value="date">按日期</option></select></label>
+            <label class="field field-grow"><span>关键词</span><input id="history-search-input" type="search" placeholder="事件或标的关键词"></label>
+            <label class="field"><span>开始日期</span><input id="history-date-from-input" type="date"></label>
+            <label class="field"><span>结束日期</span><input id="history-date-to-input" type="date"></label>
+          </div>
+          <div id="history-list" class="history-list"><div class="empty-inline">还没有本地运行记录。</div></div>
+        </section>
+
+        <section class="app-view settings-view" data-view="settings" aria-labelledby="settings-heading" hidden>
+          <div class="view-heading">
+            <div><p class="eyebrow">Data & Model Control</p><h3 id="settings-heading">数据与模型设置</h3><p>所有个人数据源、模型密钥和研究偏好只保存在本机。</p></div>
+            <button id="save-settings" type="button" class="primary">保存全部配置</button>
+          </div>
+
+          <div class="settings-grid">
+            <section class="settings-panel settings-panel-wide">
+              <div class="section-heading-row"><div><p class="eyebrow">News Sources</p><h3>RSS 数据源</h3></div><span class="data-note">RSS 2.0 / Atom</span></div>
+              <label class="field"><span>RSS 源列表</span><textarea id="rss-sources-input" rows="7" placeholder="每行一条：URL | 名称 | 区域 | 市场&#10;https://example.com/rss | 我的宏观源 | 全球 | A股+港股"></textarea></label>
+              <p class="field-help">每行一个 RSS 源，使用 <code>|</code> 分隔。URL 必须以 <code>http://</code> 或 <code>https://</code> 开头；分隔符两侧空格会自动清理；名称、区域和市场可以留空；空行与重复地址会自动忽略。</p>
+              <label class="checkbox-row"><input id="live-news-input" type="checkbox"><span>生成时优先抓取真实 RSS，失败自动回退到演示源</span></label>
             </section>
 
-            <section class="control-card">
-              <div class="section-head">
-                <p>模型设置</p>
-                <h3>自带大模型 API</h3>
-              </div>
-              <div class="two-col-grid">
-                <label class="field">
-                  <span>Provider</span>
-                  <select id="model-provider-input">
-                    <option value="openai-compatible">openai-compatible</option>
-                    <option value="codex-cli">codex-cli</option>
-                  </select>
-                </label>
-                <label class="field">
-                  <span>模型名</span>
-                  <input id="model-name-input" type="text" placeholder="gpt-4.1-mini">
-                </label>
-              </div>
-              <label class="field">
-                <span>Base URL</span>
-                <input id="model-base-url-input" type="text" placeholder="https://api.openai.com/v1">
-              </label>
-              <label class="field">
-                <span>API Key</span>
-                <input id="model-api-key-input" type="password" placeholder="留空则沿用已保存 key">
-              </label>
-              <label class="field">
-                <span>AI 超时（秒）</span>
-                <input id="model-timeout-input" type="number" min="10" max="600" step="10" value="20">
-              </label>
-              <label class="field">
-                <span>系统提示词</span>
-                <textarea id="model-system-prompt-input" rows="4" placeholder="可选，留空则使用默认财经润色提示词"></textarea>
-              </label>
-              <label class="field checkbox-row">
-                <input id="model-enabled-input" type="checkbox">
-                <span>生成时启用模型增强事件摘要与建议逻辑</span>
-              </label>
+            <section class="settings-panel">
+              <div class="section-heading-row"><div><p class="eyebrow">Market Data</p><h3>技术数据</h3></div></div>
+              <label class="field"><span>技术确认 Provider</span><select id="technical-provider-input"><option value="mock">mock</option><option value="akshare">akshare</option><option value="tradingview-mcp">tradingview-mcp</option></select></label>
+              <label class="field"><span>Bridge Endpoint</span><input id="technical-endpoint-input" type="text" placeholder="可选，供 tradingview-mcp bridge 使用"></label>
+              <div class="provider-status-card"><span>当前状态</span><strong id="technical-provider-status">mock / idle</strong><p id="technical-provider-note">保存设置或生成后显示 Provider 与回退状态。</p></div>
             </section>
 
-            <section class="control-card control-card-wide">
-              <div class="section-head">
-                <p>观察池输入</p>
-                <h3>观察池、主题与风控阈值</h3>
+            <section class="settings-panel">
+              <div class="section-heading-row"><div><p class="eyebrow">Language Model</p><h3>大模型 API</h3></div></div>
+              <div class="two-col-grid">
+                <label class="field"><span>Provider</span><select id="model-provider-input"><option value="openai-compatible">openai-compatible</option><option value="codex-cli">codex-cli</option></select></label>
+                <label class="field"><span>模型名</span><input id="model-name-input" type="text" placeholder="gpt-4.1-mini"></label>
               </div>
+              <label class="field"><span>Base URL</span><input id="model-base-url-input" type="text" placeholder="https://api.openai.com/v1"></label>
+              <label class="field"><span>API Key</span><input id="model-api-key-input" type="password" autocomplete="off" placeholder="留空则沿用已保存 key"></label>
+              <label class="field"><span>AI 超时（秒）</span><input id="model-timeout-input" type="number" min="10" max="600" step="10" value="20"></label>
+              <label class="field"><span>系统提示词</span><textarea id="model-system-prompt-input" rows="4" placeholder="可选，留空使用默认财经研究提示词"></textarea></label>
+              <label class="checkbox-row"><input id="model-enabled-input" type="checkbox"><span>启用模型增强事件摘要与建议逻辑</span></label>
+            </section>
+
+            <section class="settings-panel settings-panel-wide">
+              <div class="section-heading-row"><div><p class="eyebrow">Research Mandate</p><h3>观察池与风控</h3></div><button id="settings-generate-shortcut" type="button" class="secondary">保存后生成</button></div>
               <form id="research-form">
-                <label class="field">
-                  <span>自选股 / 持仓</span>
-                  <textarea id="watchlist-input" rows="8" placeholder="每行一条：代码 名称 仓位% 研究论点&#10;300308 中际旭创 8 海外算力资本开支是否延续&#10;00981.HK 中芯国际-H 6 把它作为设备链景气锚点"></textarea>
-                </label>
-                <label class="field">
-                  <span>关注行业 / 主题</span>
-                  <textarea id="topics-input" rows="3" placeholder="用逗号或换行分隔：AI算力，国产替代，航运，储能"></textarea>
-                </label>
+                <div class="research-input-grid">
+                  <label class="field"><span>自选股 / 持仓</span><textarea id="watchlist-input" rows="8" placeholder="每行一条：代码 名称 仓位% 研究论点&#10;300308 中际旭创 8 海外算力资本开支是否延续"></textarea></label>
+                  <div class="field-stack">
+                    <label class="field"><span>关注行业 / 主题</span><textarea id="topics-input" rows="3" placeholder="AI算力，国产替代，航运，储能"></textarea></label>
+                    <label class="field"><span>个人研究笔记</span><textarea id="notes-input" rows="4" placeholder="记录验证点、退出条件和反证线索。"></textarea></label>
+                  </div>
+                </div>
                 <div class="three-col-grid">
-                  <label class="field">
-                    <span>单名仓位阈值 %</span>
-                    <input id="single-limit-input" type="number" min="1" step="1" value="15">
-                  </label>
-                  <label class="field">
-                    <span>板块暴露阈值 %</span>
-                    <input id="sector-limit-input" type="number" min="1" step="1" value="22">
-                  </label>
-                  <label class="field">
-                    <span>负面事件提醒阈值</span>
-                    <input id="negative-threshold-input" type="number" min="1" max="100" step="1" value="72">
-                  </label>
+                  <label class="field"><span>单名仓位阈值 %</span><input id="single-limit-input" type="number" min="1" step="1" value="15"></label>
+                  <label class="field"><span>板块暴露阈值 %</span><input id="sector-limit-input" type="number" min="1" step="1" value="22"></label>
+                  <label class="field"><span>负面事件提醒阈值</span><input id="negative-threshold-input" type="number" min="1" max="100" step="1" value="72"></label>
                 </div>
-                <label class="field">
-                  <span>个人研究笔记</span>
-                  <textarea id="notes-input" rows="5" placeholder="写下你最在意的验证点、退出条件和反证线索。"></textarea>
-                </label>
-                <div class="form-actions">
-                  <button type="submit" class="primary">生成本地工作台</button>
-                  <p id="settings-status" class="inline-note">先保存配置，再开始本地生成。</p>
-                </div>
+                <div class="form-actions"><button type="submit" class="primary">生成本地工作台</button><p id="settings-status" role="status" aria-live="polite">先保存配置，再开始本地生成。</p></div>
               </form>
             </section>
-          </section>
-        </details>
+          </div>
+        </section>
       </main>
     </div>
 
+    <div id="app-toast" class="app-toast" role="status" aria-live="polite" hidden></div>
     <script>
       window.__APP_BOOTSTRAP__ = {
         overview: {{ overview|tojson }},

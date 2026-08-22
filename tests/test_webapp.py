@@ -25,6 +25,32 @@ def test_homepage_renders_core_positioning() -> None:
     assert "查看原文" in script
 
 
+def test_dashboard_shell_exposes_navigation_and_reading_controls() -> None:
+    app = create_app()
+    app.testing = True
+
+    with app.test_client() as client:
+        page = client.get("/").get_data(as_text=True)
+        portfolio_page = client.get("/portfolio").get_data(as_text=True)
+        script = client.get("/static/app.js").get_data(as_text=True)
+
+    for view in ("overview", "events", "industries", "securities", "portfolio", "history", "settings"):
+        assert f'data-nav-view="{view}"' in page
+    assert 'aria-label="主导航"' in page
+    assert 'aria-current' in script
+    assert 'data-view="history"' in page
+    assert 'data-view="settings"' in page
+    assert 'id="theme-select"' in page
+    assert 'id="font-scale-select"' in page
+    assert 'id="density-select"' in page
+    assert "news-alpha-theme" in page
+    assert "news-alpha-font-scale" in page
+    assert "news-alpha-density" in page
+    assert 'data-view="portfolio"' in portfolio_page
+    assert "window.location.hash" in script
+    assert "prefers-reduced-motion" in client.get("/static/app.css").get_data(as_text=True)
+
+
 def test_generate_endpoint_returns_workspace() -> None:
     app = create_app()
     app.testing = True
