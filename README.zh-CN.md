@@ -6,10 +6,13 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-1f6feb)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-PolyForm_Noncommercial_1.0.0-0f766e)](LICENSE)
 [![Stage](https://img.shields.io/badge/status-alpha-c76b29)](CHANGELOG.md)
+[![产品展示](https://img.shields.io/badge/产品展示-GitHub_Pages-2a9d8f)](https://wangfan36.github.io/news-event-stock-platform/)
 
 ![News Alpha 本地研究工作台](docs/images/dashboard.png)
 
 一个本地优先、可解释、可审计的 A 股与港股新闻事件研究工作台。系统把 RSS 新闻整理为事件，映射到产业链和上市公司，再通过规则评分与可选大模型生成结构化研究建议。
+
+可通过 [News Alpha 产品展示页](https://wangfan36.github.io/news-event-stock-platform/)了解研究链路与界面。该展示页是纯静态页面；研究数据、RSS 配置与模型密钥仍只保存在本地部署的应用中。
 
 > 本项目仅用于信息整理、研究辅助和软件演示，不构成投资建议，不连接券商，不自动下单，也不承诺收益。
 
