@@ -62,3 +62,12 @@ def test_showcase_has_semantic_wrapping_glass_and_motion_fallbacks() -> None:
     assert "prefers-reduced-transparency" in page
     assert "prefers-reduced-motion" in page
     assert "@keyframes coverIn" in page
+
+
+def test_showcase_uses_consistent_twenty_pixel_rounded_borders() -> None:
+    page = SHOWCASE.read_text(encoding="utf-8")
+
+    assert "--radius: 20px;" in page
+    assert page.count("border-radius: var(--radius);") >= 10
+    assert ".recommendation-stamp" in page
+    assert "border-radius: 50%;" in page

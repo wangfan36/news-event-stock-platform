@@ -28,6 +28,7 @@
       --red-wash: rgba(169, 40, 44, 0.08);
       --line: rgba(28, 24, 18, 0.18);
       --line-dark: rgba(241, 236, 223, 0.18);
+      --radius: 20px;
       --page: min(1240px, calc(100% - 64px));
       --serif: "Songti SC", "STSong", "SimSun", serif;
       --display: "Microsoft YaHei UI", "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
@@ -98,6 +99,7 @@
       left: 10px;
       z-index: 100;
       padding: 10px 14px;
+      border-radius: var(--radius);
       color: var(--white);
       background: var(--red);
       transform: translateY(-160%);
@@ -141,6 +143,7 @@
       display: grid;
       place-items: center;
       border: 1px solid var(--gold);
+      border-radius: var(--radius);
       color: var(--gold-bright);
       font-family: var(--serif);
       font-size: 17px;
@@ -204,6 +207,7 @@
       align-items: center;
       justify-content: center;
       border: 1px solid transparent;
+      border-radius: var(--radius);
       padding: 0 20px;
       font-size: 14px;
       font-weight: 700;
@@ -347,6 +351,8 @@
       min-width: 0;
       color: var(--ink);
       border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: var(--radius);
+      overflow: hidden;
       background: linear-gradient(145deg, rgba(250, 247, 239, 0.94), rgba(231, 223, 206, 0.84));
       box-shadow: 18px 22px 0 rgba(169, 40, 44, 0.5), 0 28px 90px rgba(0, 0, 0, 0.24);
       -webkit-backdrop-filter: blur(20px) saturate(112%);
@@ -360,6 +366,7 @@
       inset: 1px;
       pointer-events: none;
       content: "";
+      border-radius: inherit;
       background: linear-gradient(125deg, rgba(255, 255, 255, 0.2), transparent 28%);
     }
 
@@ -415,6 +422,8 @@
       grid-template-columns: repeat(3, 1fr);
       border-top: 1px solid var(--ink);
       border-bottom: 1px solid var(--ink);
+      border-radius: var(--radius);
+      overflow: hidden;
     }
 
     .cover-metric {
@@ -444,6 +453,7 @@
       padding: 18px 0 0 18px;
       border-top: 1px solid var(--line);
       border-left: 4px solid var(--red);
+      border-radius: var(--radius);
     }
 
     .research-brief strong {
@@ -568,6 +578,8 @@
       grid-template-columns: 0.78fr 1.22fr;
       border-top: 2px solid var(--ink);
       border-bottom: 1px solid var(--ink);
+      border-radius: var(--radius);
+      overflow: hidden;
     }
 
     .chain-steps {
@@ -683,6 +695,8 @@
 
     .workspace-layout {
       border: 1px solid var(--line-dark);
+      border-radius: var(--radius);
+      overflow: hidden;
       background: rgba(33, 26, 20, 0.76);
       box-shadow: 0 28px 80px rgba(0, 0, 0, 0.18);
       -webkit-backdrop-filter: blur(16px) saturate(112%);
@@ -708,6 +722,7 @@
     .workspace-image img {
       width: 100%;
       border: 1px solid rgba(201, 164, 93, 0.38);
+      border-radius: var(--radius);
     }
 
     .workspace-notes {
@@ -747,6 +762,8 @@
       display: grid;
       grid-template-columns: 0.72fr 1.28fr;
       border-top: 6px solid var(--red);
+      border-radius: var(--radius);
+      overflow: hidden;
       background: var(--white);
       box-shadow: 12px 12px 0 var(--gold-wash);
     }
@@ -860,6 +877,8 @@
       display: grid;
       grid-template-columns: 0.76fr 1.24fr;
       border: 1px solid rgba(241, 236, 223, 0.34);
+      border-radius: var(--radius);
+      overflow: hidden;
       background: rgba(23, 18, 14, 0.74);
       box-shadow: 0 28px 80px rgba(48, 4, 8, 0.34), inset 0 1px rgba(255, 255, 255, 0.06);
       -webkit-backdrop-filter: blur(20px) saturate(118%);
@@ -947,6 +966,7 @@
       bottom: 20px;
       min-height: 38px;
       border: 1px solid var(--gold);
+      border-radius: var(--radius);
       padding: 0 14px;
       color: var(--gold-bright);
       background: var(--night);
@@ -966,6 +986,8 @@
       display: grid;
       grid-template-columns: repeat(12, 1fr);
       border-top: 2px solid var(--ink);
+      border-radius: var(--radius);
+      overflow: hidden;
     }
 
     .principle {
