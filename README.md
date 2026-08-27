@@ -6,10 +6,13 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-1f6feb)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-PolyForm_Noncommercial_1.0.0-0f766e)](LICENSE)
 [![Stage](https://img.shields.io/badge/status-alpha-c76b29)](CHANGELOG.md)
+[![Showcase](https://img.shields.io/badge/Showcase-GitHub_Pages-2a9d8f)](https://wangfan36.github.io/news-event-stock-platform/)
 
 ![News Alpha local research workspace](docs/images/dashboard.png)
 
 News Alpha is a local-first, explainable, and auditable news-event research workspace for A-share and Hong Kong stocks. It turns RSS news into structured events, maps them to industries, supply chains, and listed companies, and generates research recommendations using rule-based scoring with optional large-language-model enhancement.
+
+Explore the product narrative and interface preview on the [News Alpha showcase](https://wangfan36.github.io/news-event-stock-platform/). The showcase is static; research data, RSS settings, and model credentials remain in the locally deployed application.
 
 > This project is provided for information organization, research assistance, and software demonstration only. It is not investment advice, does not connect to brokers or execute trades, and makes no promise of returns.
 
