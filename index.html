@@ -591,7 +591,7 @@
       min-height: 74px;
       padding: 0 20px;
       display: grid;
-      grid-template-columns: 44px 1fr auto;
+      grid-template-columns: 1fr auto;
       align-items: center;
       gap: 14px;
       border: 0;
@@ -603,12 +603,6 @@
 
     .chain-step:last-child {
       border-bottom: 0;
-    }
-
-    .chain-step span:first-child {
-      color: var(--gold);
-      font-family: var(--serif);
-      font-size: 20px;
     }
 
     .chain-step span:last-child {
@@ -1011,14 +1005,8 @@
       border-right: 0;
     }
 
-    .principle strong {
-      color: var(--gold);
-      font-family: var(--serif);
-      font-size: 24px;
-    }
-
     .principle h3 {
-      margin: 35px 0 8px;
+      margin: 0 0 8px;
       font-family: var(--display);
       font-size: 22px;
       font-weight: 600;
@@ -1345,7 +1333,7 @@
       }
 
       .chain-step {
-        grid-template-columns: 34px 1fr auto;
+        grid-template-columns: 1fr auto;
         padding: 0 14px;
       }
 
@@ -1489,11 +1477,11 @@
         </header>
         <div class="chain-shell reveal">
           <div class="chain-steps" aria-label="研究链路步骤">
-            <button class="chain-step" type="button" data-chain="news" aria-pressed="true"><span>壹</span><strong>新闻归并</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="event" aria-pressed="false"><span>贰</span><strong>事件推演</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="industry" aria-pressed="false"><span>叁</span><strong>产业传导</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="company" aria-pressed="false"><span>肆</span><strong>公司映射</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="decision" aria-pressed="false"><span>伍</span><strong>建议收口</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="news" aria-pressed="true"><strong>新闻归并</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="event" aria-pressed="false"><strong>事件推演</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="industry" aria-pressed="false"><strong>产业传导</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="company" aria-pressed="false"><strong>公司映射</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="decision" aria-pressed="false"><strong>建议收口</strong><span>→</span></button>
           </div>
           <article class="chain-detail" aria-live="polite">
             <p class="chain-detail-label" id="chain-label">NewsItem / intake</p>
@@ -1586,11 +1574,11 @@
           <p>News Alpha 以证据、约束和可复现为优先，不承诺收益，也不执行交易。</p>
         </header>
         <div class="principles-grid reveal">
-          <article class="principle"><strong>壹</strong><h3>数据留在本机</h3><p>RSS 配置、历史观点和模型密钥不发布到展示页。</p></article>
-          <article class="principle"><strong>贰</strong><h3>规则决定方向</h3><p>模型用于解释和补全，不能越过评分与置信度门槛。</p></article>
-          <article class="principle"><strong>叁</strong><h3>保留证据链</h3><p>新闻、事件、产业、公司和建议均可反向追溯。</p></article>
-          <article class="principle"><strong>肆</strong><h3>不连接券商</h3><p>一期只生成研究建议，不自动下单、不管理真实仓位。</p></article>
-          <article class="principle"><strong>伍</strong><h3>不构成投资建议</h3><p>页面与软件仅用于信息整理、研究辅助和技术演示。</p></article>
+          <article class="principle"><h3>数据留在本机</h3><p>RSS 配置、历史观点和模型密钥不发布到展示页。</p></article>
+          <article class="principle"><h3>规则决定方向</h3><p>模型用于解释和补全，不能越过评分与置信度门槛。</p></article>
+          <article class="principle"><h3>保留证据链</h3><p>新闻、事件、产业、公司和建议均可反向追溯。</p></article>
+          <article class="principle"><h3>不连接券商</h3><p>一期只生成研究建议，不自动下单、不管理真实仓位。</p></article>
+          <article class="principle"><h3>不构成投资建议</h3><p>页面与软件仅用于信息整理、研究辅助和技术演示。</p></article>
         </div>
       </div>
     </section>
