@@ -51,3 +51,14 @@ def test_showcase_uses_financial_editorial_visual_language() -> None:
     assert "#5bc9b3" not in page
     assert "terminal-frame" not in page
     assert "repeating-radial-gradient" not in page
+
+
+def test_showcase_has_semantic_wrapping_glass_and_motion_fallbacks() -> None:
+    page = SHOWCASE.read_text(encoding="utf-8")
+
+    assert "--display:" in page
+    assert page.count('class="heading-line"') == 2
+    assert "backdrop-filter: blur" in page
+    assert "prefers-reduced-transparency" in page
+    assert "prefers-reduced-motion" in page
+    assert "@keyframes coverIn" in page
