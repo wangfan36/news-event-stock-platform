@@ -71,3 +71,10 @@ def test_showcase_uses_consistent_twenty_pixel_rounded_borders() -> None:
     assert page.count("border-radius: var(--radius);") >= 10
     assert ".recommendation-stamp" in page
     assert "border-radius: 50%;" in page
+
+
+def test_showcase_does_not_use_chinese_order_labels() -> None:
+    page = SHOWCASE.read_text(encoding="utf-8")
+
+    for label in ("壹", "贰", "叁", "肆", "伍"):
+        assert label not in page
