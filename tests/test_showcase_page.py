@@ -40,3 +40,14 @@ def test_showcase_does_not_contain_api_credentials() -> None:
 
     assert "sk-" not in page
     assert "NEWS_ALPHA_API_KEY=" not in page
+
+
+def test_showcase_uses_financial_editorial_visual_language() -> None:
+    page = SHOWCASE.read_text(encoding="utf-8")
+
+    assert "--gold:" in page
+    assert "--red:" in page
+    assert 'class="research-cover"' in page
+    assert "#5bc9b3" not in page
+    assert "terminal-frame" not in page
+    assert "repeating-radial-gradient" not in page

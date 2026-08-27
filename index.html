@@ -3,34 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="News Alpha 是面向 A 股与港股的本地优先、可解释新闻事件研究终端。">
-  <meta name="theme-color" content="#081113">
+  <meta name="theme-color" content="#17120e">
+  <meta name="description" content="News Alpha 是面向 A 股与港股的本地新闻事件研究工作台，从新闻、事件、产业链和公司证据生成可解释建议。">
   <meta property="og:title" content="News Alpha｜新闻驱动研究终端">
-  <meta property="og:description" content="从全球新闻到产业链与 A/H 标的，保留每一步证据和失效条件。">
-  <meta property="og:type" content="website">
+  <meta property="og:description" content="从全球热点到产业链与 A/H 标的，保留每一步证据、催化剂和失效条件。">
   <meta property="og:image" content="https://raw.githubusercontent.com/wangfan36/news-event-stock-platform/main/docs/images/dashboard.png">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23081113'/%3E%3Cpath d='M14 45V19h7l13 17V19h8v26h-7L22 28v17z' fill='%235bc9b3'/%3E%3Cpath d='M47 19h3v26h-3z' fill='%23dce8e5'/%3E%3C/svg%3E">
   <title>News Alpha｜新闻驱动研究终端</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2317120e'/%3E%3Cpath d='M12 47V17h8l14 18V17h8v30h-8L20 29v18z' fill='%23c9a45d'/%3E%3Cpath d='M47 17h5v30h-5z' fill='%23a9282c'/%3E%3C/svg%3E">
+  <script>document.documentElement.classList.add("js");</script>
   <style>
     :root {
-      --bg: #081113;
-      --bg-soft: #0d181b;
-      --panel: #101d20;
-      --panel-strong: #142429;
-      --ink: #e4eeeb;
-      --muted: #91a39f;
-      --quiet: #657672;
-      --accent: #5bc9b3;
-      --accent-dark: #245f55;
-      --accent-wash: rgba(91, 201, 179, 0.1);
-      --line: rgba(198, 220, 214, 0.15);
-      --line-strong: rgba(198, 220, 214, 0.28);
-      --paper: #dce8e5;
-      --paper-ink: #13201e;
-      --sans: Bahnschrift, Aptos, "PingFang SC", "Microsoft YaHei", sans-serif;
-      --mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      --page: min(1240px, calc(100vw - 48px));
-      --nav-height: 72px;
+      --ink: #1c1812;
+      --ink-soft: #5d5549;
+      --night: #17120e;
+      --night-soft: #211a14;
+      --paper: #f1ecdf;
+      --paper-deep: #e7dfce;
+      --white: #faf7ef;
+      --gold: #b38a43;
+      --gold-bright: #c9a45d;
+      --gold-wash: rgba(179, 138, 67, 0.14);
+      --red: #a9282c;
+      --red-dark: #7d181d;
+      --red-wash: rgba(169, 40, 44, 0.08);
+      --line: rgba(28, 24, 18, 0.18);
+      --line-dark: rgba(241, 236, 223, 0.18);
+      --page: min(1240px, calc(100% - 64px));
+      --serif: "Songti SC", "STSong", "SimSun", serif;
+      --sans: "Aptos", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --mono: "Cascadia Mono", "Consolas", monospace;
     }
 
     * {
@@ -39,47 +40,33 @@
 
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: calc(var(--nav-height) + 24px);
+      scroll-padding-top: 74px;
     }
 
     body {
       margin: 0;
       color: var(--ink);
-      background:
-        radial-gradient(circle at 76% 4%, rgba(91, 201, 179, 0.08), transparent 24rem),
-        linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-        var(--bg);
-      background-size: auto, 40px 40px, 40px 40px, auto;
+      background: var(--paper);
       font-family: var(--sans);
+      font-size: 16px;
       line-height: 1.65;
-      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     body::before {
       position: fixed;
       inset: 0;
-      z-index: 50;
+      z-index: -1;
       pointer-events: none;
       content: "";
-      opacity: 0.16;
-      background-image: repeating-radial-gradient(circle at 20% 10%, rgba(216, 235, 229, 0.14) 0 0.35px, transparent 0.5px 3px);
-    }
-
-    ::selection {
-      color: var(--bg);
-      background: var(--accent);
+      opacity: 0.22;
+      background-image: linear-gradient(90deg, transparent 49.8%, rgba(28, 24, 18, 0.035) 50%, transparent 50.2%);
+      background-size: 25% 100%;
     }
 
     a {
       color: inherit;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 0.22em;
-    }
-
-    button,
-    a {
-      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
     }
 
     button {
@@ -90,178 +77,219 @@
     img {
       display: block;
       max-width: 100%;
+      height: auto;
     }
 
     :focus-visible {
-      outline: 3px solid var(--accent);
+      outline: 3px solid var(--red);
       outline-offset: 4px;
     }
 
     .skip-link {
       position: fixed;
-      top: 12px;
-      left: 12px;
+      top: 10px;
+      left: 10px;
       z-index: 100;
-      padding: 10px 16px;
-      color: var(--bg);
-      background: var(--accent);
+      padding: 10px 14px;
+      color: var(--white);
+      background: var(--red);
       transform: translateY(-160%);
-      transition: transform 150ms ease;
     }
 
     .skip-link:focus {
       transform: translateY(0);
     }
 
-    .site-nav {
+    .site-header {
       position: sticky;
       top: 0;
-      z-index: 30;
-      min-height: var(--nav-height);
-      border-bottom: 1px solid var(--line);
-      background: rgba(8, 17, 19, 0.92);
-      backdrop-filter: blur(16px);
+      z-index: 50;
+      border-bottom: 1px solid var(--line-dark);
+      color: var(--paper);
+      background: rgba(23, 18, 14, 0.97);
     }
 
     .nav-inner {
       width: var(--page);
-      min-height: var(--nav-height);
+      min-height: 72px;
       margin: 0 auto;
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 36px;
+      gap: 44px;
     }
 
     .brand {
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      text-decoration: none;
-      font-weight: 720;
-      letter-spacing: 0.04em;
+      min-width: max-content;
     }
 
     .brand-mark {
       width: 34px;
-      height: 34px;
+      height: 40px;
       display: grid;
       place-items: center;
-      border: 1px solid var(--accent-dark);
-      color: var(--accent);
-      background: var(--accent-wash);
-      font-family: var(--mono);
-      font-size: 12px;
+      border: 1px solid var(--gold);
+      color: var(--gold-bright);
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 15px;
+      letter-spacing: 0.08em;
     }
 
     .brand-copy small {
       display: block;
-      margin-top: -3px;
-      color: var(--quiet);
-      font-family: var(--mono);
-      font-size: 9px;
-      font-weight: 500;
+      color: var(--gold-bright);
+      font-family: var(--serif);
+      font-size: 11px;
       letter-spacing: 0.12em;
-      text-transform: uppercase;
     }
 
     .nav-links {
-      justify-self: center;
       display: flex;
-      align-items: center;
-      gap: 28px;
-      font-size: 13px;
+      justify-content: center;
+      gap: 30px;
+      color: rgba(241, 236, 223, 0.72);
+      font-size: 14px;
     }
 
     .nav-links a {
       position: relative;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 140ms ease;
+      white-space: nowrap;
     }
 
-    .nav-links a:hover,
-    .nav-links a[aria-current="location"] {
-      color: var(--ink);
-    }
-
-    .nav-links a[aria-current="location"]::after {
+    .nav-links a::after {
       position: absolute;
       right: 0;
       bottom: -25px;
       left: 0;
       height: 2px;
       content: "";
-      background: var(--accent);
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 140ms ease;
     }
 
-    .nav-action {
+    .nav-links a:hover,
+    .nav-links a[aria-current="true"] {
+      color: var(--white);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a[aria-current="true"]::after {
+      transform: scaleX(1);
+    }
+
+    .nav-cta,
+    .button {
+      min-height: 44px;
       display: inline-flex;
-      min-height: 40px;
       align-items: center;
       justify-content: center;
-      padding: 0 17px;
-      border: 1px solid var(--line-strong);
-      color: var(--ink);
-      text-decoration: none;
+      border: 1px solid transparent;
+      padding: 0 20px;
+      font-size: 14px;
+      font-weight: 700;
       white-space: nowrap;
-      transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+      transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 140ms ease;
     }
 
-    .nav-action:hover {
-      border-color: var(--accent);
-      background: var(--accent-wash);
+    .nav-cta {
+      border-color: var(--gold);
+      color: var(--gold-bright);
     }
 
-    .nav-action:active,
+    .nav-cta:hover {
+      color: var(--night);
+      background: var(--gold-bright);
+    }
+
     .button:active,
     .chain-step:active,
-    .copy-button:active,
     .install-tab:active {
       transform: translateY(1px);
     }
 
-    .hero {
-      width: var(--page);
-      min-height: calc(100dvh - var(--nav-height));
-      margin: 0 auto;
-      padding: 72px 0 58px;
-      display: grid;
-      grid-template-columns: minmax(0, 0.86fr) minmax(520px, 1.14fr);
-      align-items: center;
-      gap: clamp(44px, 7vw, 100px);
+    .button-primary {
+      color: var(--white);
+      background: var(--red);
     }
 
-    .eyebrow {
+    .button-primary:hover {
+      background: var(--red-dark);
+    }
+
+    .button-secondary {
+      border-color: currentColor;
+      color: inherit;
+      background: transparent;
+    }
+
+    .button-secondary:hover {
+      color: var(--gold-bright);
+      border-color: var(--gold-bright);
+    }
+
+    .hero {
+      min-height: calc(100dvh - 72px);
+      color: var(--paper);
+      background: var(--night);
+    }
+
+    .hero-inner {
+      width: var(--page);
+      min-height: calc(100dvh - 72px);
+      margin: 0 auto;
+      padding: 56px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(440px, 0.96fr);
+      align-items: center;
+      gap: 70px;
+    }
+
+    .hero-copy-block {
+      min-width: 0;
+      padding-left: 30px;
+      border-left: 5px solid var(--red);
+    }
+
+    .hero-kicker {
       margin: 0 0 22px;
-      color: var(--accent);
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+      color: var(--gold-bright);
+      font-size: 13px;
+      letter-spacing: 0.2em;
     }
 
     .hero h1 {
-      max-width: 800px;
+      max-width: 780px;
       margin: 0;
-      font-size: clamp(46px, 5.7vw, 82px);
-      font-weight: 680;
-      letter-spacing: -0.055em;
-      line-height: 1.03;
+      font-family: var(--serif);
+      font-size: clamp(48px, 4.5vw, 66px);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 1.08;
     }
 
     .hero h1 span {
       display: block;
-      color: var(--muted);
-      font-weight: 420;
+      color: var(--gold-bright);
+      font-weight: 400;
     }
 
-    .hero-copy {
-      max-width: 34rem;
-      margin: 28px 0 0;
-      color: var(--muted);
-      font-size: clamp(17px, 1.5vw, 20px);
-      line-height: 1.75;
+    .hero-summary {
+      max-width: 32rem;
+      margin: 30px 0 0;
+      color: rgba(241, 236, 223, 0.76);
+      font-size: 18px;
+      line-height: 1.8;
     }
 
     .hero-actions {
@@ -271,246 +299,126 @@
       gap: 12px;
     }
 
-    .button {
-      min-height: 48px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 22px;
-      border: 1px solid transparent;
-      font-size: 14px;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
-    }
-
-    .button-primary {
-      color: #07110f;
-      background: var(--accent);
-    }
-
-    .button-primary:hover {
-      background: #78d7c4;
-    }
-
-    .button-secondary {
-      border-color: var(--line-strong);
-      color: var(--ink);
-      background: transparent;
-    }
-
-    .button-secondary:hover {
-      border-color: var(--accent);
-      background: var(--accent-wash);
-    }
-
-    .terminal-frame {
+    .research-cover {
       position: relative;
-      border: 1px solid var(--line-strong);
-      background: rgba(13, 24, 27, 0.88);
-      box-shadow: 28px 38px 90px rgba(0, 0, 0, 0.28);
+      min-width: 0;
+      color: var(--ink);
+      background: var(--paper);
+      box-shadow: 18px 22px 0 rgba(169, 40, 44, 0.55);
     }
 
-    .terminal-frame::before {
-      position: absolute;
-      top: -13px;
-      right: 28px;
-      width: 108px;
-      height: 25px;
-      border: 1px solid var(--accent-dark);
-      content: "SIGNAL / TRACE";
-      color: var(--accent);
-      background: var(--bg);
-      font-family: var(--mono);
-      font-size: 9px;
-      line-height: 25px;
-      text-align: center;
-      letter-spacing: 0.1em;
-    }
-
-    .terminal-topbar {
-      min-height: 48px;
-      padding: 0 16px;
+    .cover-masthead {
+      min-height: 58px;
+      padding: 0 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      border-top: 6px solid var(--gold);
       border-bottom: 1px solid var(--line);
-      color: var(--quiet);
+      font-family: var(--serif);
+      font-size: 13px;
+    }
+
+    .cover-masthead strong {
+      color: var(--red);
+      font-family: var(--sans);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .cover-body {
+      padding: 28px;
+    }
+
+    .cover-date {
+      margin: 0;
+      color: var(--ink-soft);
       font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 0.08em;
     }
 
-    .terminal-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--accent);
+    .cover-body h2 {
+      max-width: 390px;
+      margin: 12px 0 24px;
+      font-family: var(--serif);
+      font-size: clamp(27px, 3vw, 39px);
+      line-height: 1.25;
     }
 
-    .terminal-status::before {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      content: "";
-      background: var(--accent);
-      box-shadow: 0 0 0 4px var(--accent-wash);
-    }
-
-    .terminal-body {
-      padding: 18px;
-      display: grid;
-      grid-template-columns: 0.72fr 1.28fr;
-      gap: 14px;
-    }
-
-    .terminal-sidebar {
-      border-right: 1px solid var(--line);
-      padding-right: 14px;
-    }
-
-    .terminal-logo {
-      margin-bottom: 22px;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.1em;
-    }
-
-    .terminal-logo strong {
-      display: block;
-      margin-top: 4px;
-      font-family: var(--sans);
-      font-size: 16px;
-      letter-spacing: 0;
-    }
-
-    .terminal-nav-item {
-      padding: 10px 8px;
-      border-left: 2px solid transparent;
-      color: var(--quiet);
-      font-size: 11px;
-    }
-
-    .terminal-nav-item.is-active {
-      border-color: var(--accent);
-      color: var(--ink);
-      background: var(--accent-wash);
-    }
-
-    .terminal-main {
-      min-width: 0;
-    }
-
-    .terminal-label {
-      margin: 0 0 5px;
-      color: var(--quiet);
-      font-family: var(--mono);
-      font-size: 8px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .terminal-main h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .terminal-grid {
-      margin-top: 15px;
+    .cover-metrics {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      border-top: 1px solid var(--line);
-      border-left: 1px solid var(--line);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
     }
 
-    .terminal-metric {
-      min-height: 72px;
-      padding: 11px;
+    .cover-metric {
+      padding: 15px 12px;
       border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
     }
 
-    .terminal-metric span {
+    .cover-metric:last-child {
+      border-right: 0;
+    }
+
+    .cover-metric span,
+    .brief-label {
       display: block;
-      color: var(--quiet);
-      font-size: 9px;
+      color: var(--ink-soft);
+      font-size: 10px;
     }
 
-    .terminal-metric strong {
+    .cover-metric strong {
       display: block;
-      margin-top: 7px;
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 600;
+      margin-top: 5px;
+      font-size: 14px;
     }
 
-    .event-tape {
-      margin-top: 14px;
-      padding: 14px;
-      border: 1px solid var(--accent-dark);
-      background: var(--accent-wash);
+    .research-brief {
+      margin-top: 22px;
+      padding: 18px 0 0 18px;
+      border-top: 1px solid var(--line);
+      border-left: 4px solid var(--red);
     }
 
-    .event-tape strong {
+    .research-brief strong {
       display: block;
-      font-size: 13px;
-      line-height: 1.5;
+      margin-top: 8px;
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.55;
     }
 
-    .trace-line {
-      margin-top: 12px;
+    .evidence-row {
+      margin-top: 20px;
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      align-items: center;
-      gap: 6px;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid var(--line);
     }
 
-    .trace-node {
-      position: relative;
-      min-width: 0;
-      padding-top: 13px;
-      color: var(--quiet);
-      font-family: var(--mono);
-      font-size: 8px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .trace-node::before {
-      position: absolute;
-      top: 2px;
-      left: 50%;
-      width: 6px;
-      height: 6px;
-      border: 1px solid var(--accent);
-      border-radius: 50%;
-      content: "";
-      background: var(--panel);
-      transform: translateX(-50%);
-    }
-
-    .trace-node:not(:last-child)::after {
-      position: absolute;
-      top: 5px;
-      left: calc(50% + 7px);
-      width: calc(100% - 8px);
-      height: 1px;
-      content: "";
-      background: var(--accent-dark);
-    }
-
-    .terminal-note {
-      margin: 12px 0 0;
-      color: var(--quiet);
+    .evidence-row span {
+      padding: 10px 4px 0;
+      color: var(--ink-soft);
       font-size: 9px;
+      text-align: center;
+    }
+
+    .evidence-row span:first-child {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .cover-note {
+      margin: 22px 0 0;
+      color: var(--ink-soft);
+      font-size: 10px;
     }
 
     .proof-strip {
-      border-top: 1px solid var(--line);
+      border-top: 5px solid var(--red);
       border-bottom: 1px solid var(--line);
-      background: rgba(13, 24, 27, 0.6);
+      background: var(--white);
     }
 
     .proof-inner {
@@ -521,7 +429,7 @@
     }
 
     .proof-item {
-      min-height: 112px;
+      min-height: 108px;
       padding: 24px 26px;
       border-right: 1px solid var(--line);
     }
@@ -532,18 +440,20 @@
 
     .proof-item strong {
       display: block;
+      color: var(--red);
+      font-family: var(--serif);
       font-size: 21px;
-      letter-spacing: -0.02em;
     }
 
     .proof-item span {
-      color: var(--muted);
-      font-size: 12px;
+      display: block;
+      margin-top: 5px;
+      color: var(--ink-soft);
+      font-size: 13px;
     }
 
     .section {
-      position: relative;
-      padding: clamp(90px, 10vw, 144px) 0;
+      padding: 112px 0;
       border-bottom: 1px solid var(--line);
     }
 
@@ -553,238 +463,240 @@
     }
 
     .section-heading {
-      max-width: 850px;
-      margin-bottom: 56px;
+      max-width: 780px;
+      margin-bottom: 52px;
+    }
+
+    .section-number {
+      margin: 0 0 15px;
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 12px;
     }
 
     .section-heading h2 {
       margin: 0;
-      font-size: clamp(34px, 4.5vw, 64px);
-      font-weight: 620;
-      letter-spacing: -0.045em;
-      line-height: 1.08;
+      font-family: var(--serif);
+      font-size: clamp(36px, 4.6vw, 60px);
+      line-height: 1.15;
+      letter-spacing: -0.035em;
     }
 
-    .section-heading p {
-      max-width: 650px;
-      margin: 22px 0 0;
-      color: var(--muted);
+    .section-heading p:last-child {
+      max-width: 42rem;
+      margin: 20px 0 0;
+      color: var(--ink-soft);
       font-size: 17px;
     }
 
-    .section-index {
-      display: inline-block;
-      margin-bottom: 20px;
-      color: var(--accent);
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.16em;
-    }
-
     .chain-shell {
-      border-top: 1px solid var(--line-strong);
-      border-bottom: 1px solid var(--line-strong);
       display: grid;
-      grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+      grid-template-columns: 0.78fr 1.22fr;
+      border-top: 2px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
     }
 
     .chain-steps {
-      border-right: 1px solid var(--line-strong);
+      border-right: 1px solid var(--ink);
     }
 
     .chain-step {
       width: 100%;
-      min-height: 78px;
-      padding: 0 22px;
+      min-height: 74px;
+      padding: 0 20px;
       display: grid;
       grid-template-columns: 44px 1fr auto;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       border: 0;
       border-bottom: 1px solid var(--line);
-      color: var(--muted);
+      text-align: left;
       background: transparent;
       cursor: pointer;
-      text-align: left;
-      transition: color 140ms ease, background 140ms ease;
     }
 
     .chain-step:last-child {
       border-bottom: 0;
     }
 
+    .chain-step span:first-child {
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 20px;
+    }
+
+    .chain-step span:last-child {
+      color: var(--red);
+    }
+
     .chain-step:hover,
     .chain-step[aria-pressed="true"] {
-      color: var(--ink);
-      background: var(--accent-wash);
+      background: var(--red-wash);
     }
 
     .chain-step[aria-pressed="true"] {
-      box-shadow: inset 3px 0 var(--accent);
-    }
-
-    .chain-step span:first-child,
-    .chain-step span:last-child {
-      font-family: var(--mono);
-      font-size: 10px;
-    }
-
-    .chain-step span:last-child {
-      color: var(--accent);
+      box-shadow: inset 5px 0 var(--red);
     }
 
     .chain-detail {
-      min-height: 390px;
-      padding: clamp(34px, 5vw, 70px);
-      display: grid;
-      align-content: center;
-      background:
-        linear-gradient(120deg, var(--accent-wash), transparent 44%),
-        var(--panel);
+      min-height: 370px;
+      padding: 48px;
+      background: var(--white);
     }
 
     .chain-detail-label {
-      margin: 0 0 12px;
-      color: var(--accent);
+      margin: 0;
+      color: var(--red);
       font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
+      font-size: 11px;
     }
 
     .chain-detail h3 {
-      max-width: 680px;
-      margin: 0;
-      font-size: clamp(28px, 3.4vw, 46px);
-      letter-spacing: -0.035em;
-      line-height: 1.15;
+      max-width: 620px;
+      margin: 18px 0 0;
+      font-family: var(--serif);
+      font-size: clamp(26px, 3vw, 38px);
+      line-height: 1.35;
     }
 
     .chain-detail-copy {
-      max-width: 680px;
-      margin: 18px 0 0;
-      color: var(--muted);
-      font-size: 16px;
+      max-width: 650px;
+      margin: 22px 0 0;
+      color: var(--ink-soft);
     }
 
     .chain-fields {
-      margin: 30px 0 0;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      margin: 28px 0 0;
+      padding: 18px 0 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      border-top: 1px solid var(--line);
       list-style: none;
     }
 
     .chain-fields li {
-      padding: 7px 10px;
-      border: 1px solid var(--line-strong);
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 10px;
+      color: var(--ink-soft);
+      font-size: 13px;
+    }
+
+    .chain-fields li::before {
+      margin-right: 8px;
+      color: var(--gold);
+      content: "◆";
+      font-size: 8px;
     }
 
     .workspace-section {
-      overflow: hidden;
+      color: var(--paper);
+      background: var(--night);
+    }
+
+    .workspace-section .section-number {
+      color: var(--gold-bright);
+    }
+
+    .workspace-section .section-heading p:last-child {
+      color: rgba(241, 236, 223, 0.7);
     }
 
     .workspace-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr);
-      gap: 0;
-      border: 1px solid var(--line-strong);
-      background: var(--panel);
+      border: 1px solid var(--line-dark);
+      background: var(--night-soft);
     }
 
     .workspace-image {
       position: relative;
-      min-width: 0;
-      padding: 18px;
-      border-right: 1px solid var(--line-strong);
-      background: #050b0d;
+      padding: 26px;
+      border-bottom: 1px solid var(--line-dark);
     }
 
     .workspace-image::before {
-      display: block;
-      padding: 0 0 13px;
-      content: "LOCAL SESSION / DASHBOARD.PNG";
-      color: var(--quiet);
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 0.12em;
+      position: absolute;
+      top: 0;
+      left: 26px;
+      width: 130px;
+      height: 5px;
+      content: "";
+      background: var(--red);
     }
 
     .workspace-image img {
       width: 100%;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(201, 164, 93, 0.38);
     }
 
     .workspace-notes {
       display: grid;
-      grid-template-rows: repeat(3, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
     .workspace-note {
+      min-height: 178px;
       padding: 28px;
-      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line-dark);
     }
 
     .workspace-note:last-child {
-      border-bottom: 0;
+      border-right: 0;
     }
 
     .workspace-note span {
-      color: var(--accent);
+      color: var(--gold-bright);
       font-family: var(--mono);
       font-size: 10px;
     }
 
     .workspace-note h3 {
-      margin: 11px 0 8px;
-      font-size: 19px;
+      margin: 15px 0 8px;
+      font-family: var(--serif);
+      font-size: 24px;
     }
 
     .workspace-note p {
       margin: 0;
-      color: var(--muted);
-      font-size: 13px;
+      color: rgba(241, 236, 223, 0.65);
+      font-size: 14px;
     }
 
     .output-ledger {
       display: grid;
-      grid-template-columns: 0.78fr 1.22fr;
-      align-items: stretch;
-      border-top: 1px solid var(--line-strong);
-      border-bottom: 1px solid var(--line-strong);
+      grid-template-columns: 0.72fr 1.28fr;
+      border-top: 6px solid var(--red);
+      background: var(--white);
+      box-shadow: 12px 12px 0 var(--gold-wash);
     }
 
     .output-index {
       padding: 40px;
-      border-right: 1px solid var(--line-strong);
-      background: var(--paper);
-      color: var(--paper-ink);
+      border-right: 1px solid var(--ink);
+      background: var(--paper-deep);
     }
 
     .output-index h3 {
       margin: 0;
-      font-size: 28px;
-      letter-spacing: -0.03em;
+      font-family: var(--serif);
+      font-size: 30px;
     }
 
     .output-index p {
-      margin: 16px 0 0;
-      color: rgba(19, 32, 30, 0.68);
+      margin: 20px 0 0;
+      color: var(--ink-soft);
     }
 
     .recommendation-stamp {
-      margin-top: 44px;
-      padding-top: 16px;
-      border-top: 2px solid var(--paper-ink);
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      font-family: var(--mono);
-      font-size: 11px;
+      width: 96px;
+      height: 96px;
+      margin-top: 36px;
+      display: grid;
+      place-items: center;
+      border: 3px double var(--red);
+      border-radius: 50%;
+      color: var(--red);
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 700;
+      transform: rotate(-8deg);
     }
 
     .output-fields {
@@ -793,8 +705,8 @@
     }
 
     .output-field {
-      min-height: 144px;
-      padding: 28px;
+      min-height: 190px;
+      padding: 30px;
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
     }
@@ -808,237 +720,232 @@
     }
 
     .output-field span {
-      color: var(--accent);
+      color: var(--red);
       font-family: var(--mono);
       font-size: 10px;
-      letter-spacing: 0.08em;
     }
 
     .output-field h4 {
-      margin: 12px 0 7px;
-      font-size: 17px;
+      margin: 14px 0 8px;
+      font-family: var(--serif);
+      font-size: 22px;
     }
 
     .output-field p {
       margin: 0;
-      color: var(--muted);
-      font-size: 13px;
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+
+    .install-section {
+      color: var(--paper);
+      background: var(--red-dark);
+    }
+
+    .install-section .section-number {
+      color: var(--gold-bright);
+    }
+
+    .install-section .section-heading p:last-child {
+      color: rgba(241, 236, 223, 0.75);
     }
 
     .install-layout {
       display: grid;
-      grid-template-columns: minmax(260px, 0.62fr) minmax(0, 1.38fr);
-      border: 1px solid var(--line-strong);
+      grid-template-columns: 0.76fr 1.24fr;
+      border: 1px solid rgba(241, 236, 223, 0.34);
+      background: var(--night);
     }
 
     .install-intro {
-      padding: 38px;
-      border-right: 1px solid var(--line-strong);
-      background: var(--panel-strong);
+      padding: 36px;
+      border-right: 1px solid var(--line-dark);
     }
 
     .install-intro h3 {
       margin: 0;
+      font-family: var(--serif);
       font-size: 28px;
     }
 
     .install-intro p {
-      margin: 16px 0 0;
-      color: var(--muted);
+      color: rgba(241, 236, 223, 0.65);
     }
 
     .install-checks {
-      margin: 30px 0 0;
+      margin: 28px 0 0;
       padding: 0;
       list-style: none;
     }
 
     .install-checks li {
-      padding: 11px 0;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 13px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line-dark);
+      color: rgba(241, 236, 223, 0.78);
+      font-size: 14px;
     }
 
     .install-checks li::before {
       margin-right: 10px;
-      content: "✓";
-      color: var(--accent);
+      color: var(--gold-bright);
+      content: "一";
     }
 
     .install-console {
       min-width: 0;
-      background: #050b0d;
     }
 
     .install-tabs {
       display: flex;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid var(--line-dark);
     }
 
     .install-tab {
       min-height: 52px;
-      padding: 0 22px;
+      padding: 0 24px;
       border: 0;
-      border-right: 1px solid var(--line);
-      color: var(--quiet);
+      border-right: 1px solid var(--line-dark);
+      color: rgba(241, 236, 223, 0.6);
       background: transparent;
       cursor: pointer;
-      font-family: var(--mono);
-      font-size: 11px;
     }
 
     .install-tab[aria-selected="true"] {
-      color: var(--accent);
-      background: var(--accent-wash);
+      color: var(--night);
+      background: var(--gold-bright);
     }
 
     .command-panel {
       position: relative;
-      min-height: 300px;
-      padding: 40px 72px 40px 34px;
-    }
-
-    .command-panel pre {
-      margin: 0;
-      overflow: auto;
-      color: #b9cbc7;
+      min-height: 288px;
+      padding: 34px;
+      overflow-x: auto;
+      color: #e8dfce;
       font-family: var(--mono);
       font-size: 13px;
-      line-height: 2;
-      white-space: pre-wrap;
+      line-height: 1.9;
+      white-space: pre;
     }
 
-    .command-panel .prompt {
-      color: var(--accent);
+    .prompt {
+      color: var(--gold-bright);
     }
 
     .copy-button {
       position: absolute;
-      top: 24px;
-      right: 24px;
-      width: 40px;
-      height: 40px;
-      border: 1px solid var(--line-strong);
-      color: var(--muted);
-      background: var(--panel);
+      right: 20px;
+      bottom: 20px;
+      min-height: 38px;
+      border: 1px solid var(--gold);
+      padding: 0 14px;
+      color: var(--gold-bright);
+      background: var(--night);
       cursor: pointer;
-      font-family: var(--mono);
-      transition: border-color 140ms ease, color 140ms ease, transform 140ms ease;
     }
 
     .copy-button:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+      color: var(--night);
+      background: var(--gold-bright);
     }
 
-    .copy-status {
-      margin: 0;
-      padding: 0 34px 24px;
-      color: var(--quiet);
-      font-size: 11px;
+    .principles-section {
+      background: var(--paper-deep);
     }
 
     .principles-grid {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
-      border-top: 1px solid var(--line-strong);
+      border-top: 2px solid var(--ink);
     }
 
     .principle {
       min-height: 230px;
-      padding: 30px;
+      padding: 28px 24px;
+      grid-column: span 4;
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
-      grid-column: span 4;
     }
 
-    .principle:nth-child(4) {
-      grid-column: span 7;
-    }
-
-    .principle:nth-child(5) {
-      grid-column: span 5;
+    .principle:nth-child(3) {
       border-right: 0;
     }
 
-    .principle-no {
-      color: var(--accent);
-      font-family: var(--mono);
-      font-size: 10px;
+    .principle:nth-child(4),
+    .principle:nth-child(5) {
+      grid-column: span 6;
+    }
+
+    .principle:nth-child(5) {
+      border-right: 0;
+    }
+
+    .principle strong {
+      color: var(--gold);
+      font-family: var(--serif);
+      font-size: 24px;
     }
 
     .principle h3 {
-      margin: 52px 0 10px;
-      font-size: 20px;
+      margin: 35px 0 8px;
+      font-family: var(--serif);
+      font-size: 22px;
     }
 
     .principle p {
-      max-width: 520px;
       margin: 0;
-      color: var(--muted);
-      font-size: 13px;
+      color: var(--ink-soft);
+      font-size: 14px;
     }
 
     .license-band {
-      padding: 72px 0;
-      color: var(--paper-ink);
-      background: var(--paper);
+      padding: 64px 0;
+      color: var(--paper);
+      background: var(--night);
+      border-top: 8px solid var(--gold);
     }
 
     .license-inner {
       width: var(--page);
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 0.75fr 1.25fr auto;
+      grid-template-columns: 190px 1fr auto;
       align-items: center;
       gap: 42px;
     }
 
     .license-code {
+      color: var(--gold-bright);
       font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
+      font-size: 12px;
+      line-height: 1.8;
     }
 
     .license-copy h2 {
       margin: 0;
-      font-size: clamp(27px, 3.6vw, 45px);
-      letter-spacing: -0.04em;
-      line-height: 1.1;
+      font-family: var(--serif);
+      font-size: clamp(26px, 3vw, 38px);
     }
 
     .license-copy p {
       margin: 12px 0 0;
-      color: rgba(19, 32, 30, 0.68);
+      color: rgba(241, 236, 223, 0.65);
       font-size: 14px;
     }
 
-    .license-band .button-secondary {
-      border-color: rgba(19, 32, 30, 0.4);
-      color: var(--paper-ink);
-    }
-
-    .license-band .button-secondary:hover {
-      border-color: var(--paper-ink);
-      background: rgba(19, 32, 30, 0.08);
-    }
-
     .site-footer {
-      padding: 28px 0;
-      border-top: 1px solid var(--line);
-      color: var(--quiet);
-      background: #050b0d;
-      font-size: 12px;
+      color: rgba(241, 236, 223, 0.55);
+      background: #0d0a08;
     }
 
     .footer-inner {
       width: var(--page);
+      min-height: 94px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 24px;
+      font-size: 12px;
     }
 
     .footer-links {
@@ -1048,14 +955,7 @@
     }
 
     .footer-links a:hover {
-      color: var(--ink);
-    }
-
-    .disclaimer {
-      max-width: 760px;
-      margin: 18px 0 0;
-      color: var(--quiet);
-      font-size: 11px;
+      color: var(--gold-bright);
     }
 
     .reveal {
@@ -1065,8 +965,8 @@
 
     .js .reveal {
       opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 520ms ease, transform 520ms ease;
+      transform: translateY(12px);
+      transition: opacity 150ms ease, transform 150ms ease;
     }
 
     .js .reveal.is-visible {
@@ -1074,135 +974,31 @@
       transform: none;
     }
 
-    @media (max-width: 1040px) {
-      :root {
-        --page: min(100% - 36px, 920px);
-      }
-
-      .nav-inner {
-        gap: 20px;
-      }
-
-      .nav-links {
-        gap: 18px;
-      }
-
-      .hero {
-        min-height: auto;
-        padding: 78px 0 84px;
-        grid-template-columns: 1fr;
-      }
-
-      .hero-copy {
-        max-width: 44rem;
-      }
-
-      .terminal-frame {
-        max-width: 760px;
-      }
-
-      .workspace-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .workspace-image {
-        border-right: 0;
-        border-bottom: 1px solid var(--line-strong);
-      }
-
-      .workspace-notes {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: none;
-      }
-
-      .workspace-note {
-        border-right: 1px solid var(--line);
-        border-bottom: 0;
-      }
-
-      .workspace-note:last-child {
-        border-right: 0;
-      }
-
-      .license-inner {
-        grid-template-columns: 0.45fr 1.55fr;
-      }
-
-      .license-inner .button {
-        grid-column: 2;
-        justify-self: start;
-      }
+    .noscript-note {
+      margin: 0;
+      padding: 12px;
+      color: var(--white);
+      text-align: center;
+      background: var(--red);
     }
 
-    @media (max-width: 780px) {
-      :root {
-        --page: min(100% - 28px, 680px);
-        --nav-height: 64px;
+    @media (max-width: 1080px) {
+      .nav-links {
+        display: none;
       }
 
       .nav-inner {
         grid-template-columns: 1fr auto;
       }
 
-      .brand-copy small,
-      .nav-links {
-        display: none;
-      }
-
-      .hero {
-        padding: 56px 0 68px;
-        gap: 48px;
-      }
-
-      .hero-content,
-      .terminal-frame,
-      .terminal-body,
-      .terminal-main {
-        width: 100%;
-        min-width: 0;
-        max-width: 100%;
-      }
-
-      .hero h1 {
-        font-size: clamp(40px, 12.5vw, 60px);
-      }
-
-      .eyebrow,
-      .hero-copy {
-        overflow-wrap: anywhere;
-      }
-
-      .terminal-body {
-        grid-template-columns: 1fr;
-      }
-
-      .terminal-sidebar {
-        display: none;
-      }
-
-      .terminal-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .terminal-metric {
+      .hero-inner {
         min-height: auto;
+        padding: 78px 0 94px;
+        grid-template-columns: 1fr;
       }
 
-      .trace-line {
-        overflow-x: auto;
-        grid-template-columns: repeat(5, minmax(72px, 1fr));
-      }
-
-      .proof-inner {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .proof-item:nth-child(2) {
-        border-right: 0;
-      }
-
-      .proof-item:nth-child(-n + 2) {
-        border-bottom: 1px solid var(--line);
+      .research-cover {
+        max-width: 760px;
       }
 
       .chain-shell,
@@ -1215,36 +1011,125 @@
       .output-index,
       .install-intro {
         border-right: 0;
-        border-bottom: 1px solid var(--line-strong);
+        border-bottom: 1px solid var(--ink);
       }
 
-      .chain-detail {
-        min-height: 360px;
+      .install-intro {
+        border-bottom-color: var(--line-dark);
       }
 
-      .workspace-notes {
+      .license-inner {
+        grid-template-columns: 150px 1fr;
+      }
+
+      .license-inner .button {
+        grid-column: 2;
+        justify-self: start;
+      }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --page: min(100% - 28px, 680px);
+      }
+
+      body::before {
+        display: none;
+      }
+
+      .nav-inner {
+        min-height: 64px;
+      }
+
+      .brand-copy small {
+        display: none;
+      }
+
+      .hero-inner {
+        padding: 54px 0 70px;
+        gap: 52px;
+      }
+
+      .hero-copy-block {
+        padding-left: 18px;
+        border-left-width: 4px;
+      }
+
+      .hero-kicker {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+      }
+
+      .hero h1 {
+        font-size: clamp(42px, 12.5vw, 58px);
+      }
+
+      .hero-summary {
+        font-size: 16px;
+      }
+
+      .research-cover {
+        width: calc(100% - 10px);
+        box-shadow: 10px 12px 0 rgba(169, 40, 44, 0.55);
+      }
+
+      .cover-metrics,
+      .proof-inner,
+      .workspace-notes,
+      .output-fields,
+      .chain-fields {
         grid-template-columns: 1fr;
       }
 
-      .workspace-note {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .output-fields {
-        grid-template-columns: 1fr;
-      }
-
+      .cover-metric,
+      .proof-item,
+      .proof-item:first-child,
+      .workspace-note,
       .output-field,
       .output-field:nth-child(2n),
       .output-field:nth-last-child(-n + 2) {
-        min-height: auto;
         border-right: 0;
+        border-left: 0;
         border-bottom: 1px solid var(--line);
       }
 
+      .cover-metric:last-child,
+      .proof-item:last-child,
+      .workspace-note:last-child,
       .output-field:last-child {
         border-bottom: 0;
+      }
+
+      .evidence-row {
+        overflow-x: auto;
+        grid-template-columns: repeat(5, minmax(68px, 1fr));
+      }
+
+      .section {
+        padding: 78px 0;
+      }
+
+      .section-heading {
+        margin-bottom: 36px;
+      }
+
+      .chain-shell {
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .chain-steps {
+        border-right: 0;
+      }
+
+      .chain-detail,
+      .output-index,
+      .install-intro,
+      .command-panel {
+        padding: 26px;
+      }
+
+      .workspace-image {
+        padding: 14px;
       }
 
       .principle,
@@ -1255,13 +1140,9 @@
         border-right: 0;
       }
 
-      .principle h3 {
-        margin-top: 32px;
-      }
-
       .license-inner {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 22px;
       }
 
       .license-inner .button {
@@ -1269,65 +1150,43 @@
       }
 
       .footer-inner {
+        padding: 24px 0;
         align-items: flex-start;
         flex-direction: column;
       }
     }
 
     @media (max-width: 480px) {
+      .brand-copy strong {
+        font-size: 13px;
+      }
+
+      .nav-cta {
+        padding: 0 13px;
+        font-size: 12px;
+      }
+
       .hero-actions,
       .hero-actions .button {
         width: 100%;
       }
 
-      .terminal-frame::before {
-        right: 14px;
+      .cover-body {
+        padding: 20px;
       }
 
-      .terminal-topbar {
-        gap: 10px;
-        font-size: 8px;
-      }
-
-      .proof-inner {
-        grid-template-columns: 1fr;
-      }
-
-      .proof-item,
-      .proof-item:first-child,
-      .proof-item:nth-child(2) {
-        min-height: auto;
-        border-right: 0;
-        border-left: 0;
-        border-bottom: 1px solid var(--line);
+      .cover-masthead {
+        padding: 0 16px;
       }
 
       .chain-step {
-        min-height: 68px;
+        grid-template-columns: 34px 1fr auto;
         padding: 0 14px;
       }
 
-      .chain-detail,
-      .output-index,
-      .install-intro {
-        padding: 28px 22px;
-      }
-
       .command-panel {
-        padding: 70px 20px 28px;
-      }
-
-      .copy-button {
-        top: 16px;
-        right: 16px;
-      }
-
-      .copy-status {
-        padding: 0 20px 22px;
-      }
-
-      .workspace-image {
-        padding: 10px;
+        min-height: 330px;
+        font-size: 11px;
       }
     }
 
@@ -1339,10 +1198,9 @@
       *,
       *::before,
       *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
 
       .js .reveal {
@@ -1352,92 +1210,76 @@
     }
 
     @media print {
-      .site-nav,
+      .site-header,
       .hero-actions,
       .copy-button {
         display: none;
       }
 
-      body {
-        color: #111;
+      .hero,
+      .workspace-section,
+      .install-section,
+      .license-band {
+        color: #000;
         background: #fff;
-      }
-
-      .section,
-      .hero {
-        break-inside: avoid;
       }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
+  <noscript><p class="noscript-note">页面内容可正常阅读；启用 JavaScript 后可切换研究链路与安装命令。</p></noscript>
 
-  <header class="site-nav" aria-label="页面导航">
+  <header class="site-header">
     <div class="nav-inner">
       <a class="brand" href="#top" aria-label="News Alpha 首页">
-        <span class="brand-mark" aria-hidden="true">NA</span>
-        <span class="brand-copy">NEWS ALPHA<small>Research terminal</small></span>
+        <span class="brand-mark" aria-hidden="true">研</span>
+        <span class="brand-copy"><strong>NEWS ALPHA</strong><small>新闻事件研究</small></span>
       </a>
-      <nav class="nav-links" aria-label="主要章节">
+      <nav class="nav-links" aria-label="主导航">
         <a href="#chain">研究链路</a>
         <a href="#workspace">终端界面</a>
         <a href="#output">建议结构</a>
         <a href="#install">本地部署</a>
-        <a href="#principles">边界</a>
+        <a href="#principles">研究边界</a>
       </nav>
-      <a class="nav-action" href="#install">本地部署</a>
+      <a class="nav-cta" href="#install">本地部署</a>
     </div>
   </header>
 
   <main id="main">
     <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="hero-content">
-        <p class="eyebrow">Local-first intelligence / A-share + Hong Kong</p>
-        <h1 id="hero-title">把新闻噪声，<span>压缩成投资线索。</span></h1>
-        <p class="hero-copy">从全球热点到产业链与 A/H 标的，保留每一步证据、催化剂和失效条件。</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#install">本地部署</a>
-          <a class="button button-secondary" href="https://github.com/wangfan36/news-event-stock-platform">查看源码</a>
-        </div>
-      </div>
-
-      <div class="terminal-frame" aria-label="News Alpha 研究终端结构演示">
-        <div class="terminal-topbar">
-          <span>NEWS ALPHA / RESEARCH OS</span>
-          <span class="terminal-status">LOCAL MODE</span>
-        </div>
-        <div class="terminal-body">
-          <aside class="terminal-sidebar" aria-hidden="true">
-            <div class="terminal-logo">INSTITUTIONAL<strong>研究终端</strong></div>
-            <div class="terminal-nav-item is-active">研究总览</div>
-            <div class="terminal-nav-item">事件研究</div>
-            <div class="terminal-nav-item">产业链</div>
-            <div class="terminal-nav-item">标的建议</div>
-            <div class="terminal-nav-item">历史回放</div>
-          </aside>
-          <div class="terminal-main">
-            <p class="terminal-label">Bundled demo snapshot</p>
-            <h2>今日研究总览</h2>
-            <div class="terminal-grid">
-              <div class="terminal-metric"><span>市场范围</span><strong>A + H</strong></div>
-              <div class="terminal-metric"><span>研究模式</span><strong>事件驱动</strong></div>
-              <div class="terminal-metric"><span>建议执行</span><strong>MANUAL</strong></div>
-            </div>
-            <div class="event-tape">
-              <p class="terminal-label">示例事件</p>
-              <strong>海外 AI 资本开支持高位，光模块与交换链景气延续</strong>
-              <div class="trace-line" aria-label="研究证据链">
-                <span class="trace-node">NEWS</span>
-                <span class="trace-node">EVENT</span>
-                <span class="trace-node">CHAIN</span>
-                <span class="trace-node">COMPANY</span>
-                <span class="trace-node">ACTION</span>
-              </div>
-            </div>
-            <p class="terminal-note">演示内容不是实时市场观点，不构成投资建议。</p>
+      <div class="hero-inner">
+        <div class="hero-copy-block">
+          <p class="hero-kicker">A 股与港股 · 新闻事件研究工作台</p>
+          <h1 id="hero-title">把新闻噪声，<span>整理成投资线索。</span></h1>
+          <p class="hero-summary">从全球热点到产业链与 A/H 标的，保留每一步证据、催化剂和失效条件。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#install">本地部署</a>
+            <a class="button button-secondary" href="https://github.com/wangfan36/news-event-stock-platform">查看源码</a>
           </div>
         </div>
+
+        <article class="research-cover" aria-label="News Alpha 研究简报结构演示">
+          <div class="cover-masthead"><span>News Alpha 研究简报</span><strong>仅供研究</strong></div>
+          <div class="cover-body">
+            <p class="cover-date">LOCAL EDITION / BUNDLED DEMO</p>
+            <h2>今日新闻事件与产业影响观察</h2>
+            <div class="cover-metrics">
+              <div class="cover-metric"><span>市场范围</span><strong>A 股 + 港股</strong></div>
+              <div class="cover-metric"><span>研究方式</span><strong>事件驱动</strong></div>
+              <div class="cover-metric"><span>建议执行</span><strong>人工确认</strong></div>
+            </div>
+            <div class="research-brief">
+              <span class="brief-label">示例事件</span>
+              <strong>海外 AI 资本开支持续高位，光模块与交换链景气延续</strong>
+            </div>
+            <div class="evidence-row" aria-label="证据链">
+              <span>新闻</span><span>事件</span><span>产业</span><span>公司</span><span>建议</span>
+            </div>
+            <p class="cover-note">演示内容不是实时市场观点，不构成投资建议。</p>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -1446,32 +1288,31 @@
         <div class="proof-item"><strong>A 股 + 港股</strong><span>统一公司画像和事件映射</span></div>
         <div class="proof-item"><strong>RSS / Atom</strong><span>自定义新闻源，自动清理与去重</span></div>
         <div class="proof-item"><strong>规则 + 模型</strong><span>规则定方向，模型只增强解释</span></div>
-        <div class="proof-item"><strong>Local SQLite</strong><span>配置、历史观点和运行快照留在本机</span></div>
+        <div class="proof-item"><strong>本地 SQLite</strong><span>配置、观点与快照留在本机</span></div>
       </div>
     </section>
 
     <section class="section" id="chain" aria-labelledby="chain-title">
       <div class="section-inner">
         <header class="section-heading reveal">
-          <span class="section-index">01 / EVIDENCE CHAIN</span>
+          <p class="section-number">01 / 研究证据链</p>
           <h2 id="chain-title">结论不是起点。证据链才是。</h2>
-          <p>点击五个环节，查看 News Alpha 如何把一条新闻逐层收敛为结构化研究建议。</p>
+          <p>系统把新闻判断拆成五个可追溯步骤。任何建议都必须能回到原始信息与明确的失效条件。</p>
         </header>
-
         <div class="chain-shell reveal">
           <div class="chain-steps" aria-label="研究链路步骤">
-            <button class="chain-step" type="button" data-chain="news" aria-pressed="true"><span>01</span><strong>新闻归并</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="event" aria-pressed="false"><span>02</span><strong>事件推演</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="industry" aria-pressed="false"><span>03</span><strong>产业传导</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="company" aria-pressed="false"><span>04</span><strong>公司映射</strong><span>→</span></button>
-            <button class="chain-step" type="button" data-chain="decision" aria-pressed="false"><span>05</span><strong>建议收口</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="news" aria-pressed="true"><span>壹</span><strong>新闻归并</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="event" aria-pressed="false"><span>贰</span><strong>事件推演</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="industry" aria-pressed="false"><span>叁</span><strong>产业传导</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="company" aria-pressed="false"><span>肆</span><strong>公司映射</strong><span>→</span></button>
+            <button class="chain-step" type="button" data-chain="decision" aria-pressed="false"><span>伍</span><strong>建议收口</strong><span>→</span></button>
           </div>
           <article class="chain-detail" aria-live="polite">
             <p class="chain-detail-label" id="chain-label">NewsItem / intake</p>
             <h3 id="chain-detail-title">先判断这是不是同一件事，以及信息是否可信。</h3>
             <p class="chain-detail-copy" id="chain-detail-copy">系统对 RSS/Atom 新闻做标准化、URL 去重、标题聚类、地区和市场标记，并保留原始来源与发布时间。</p>
             <ul class="chain-fields" id="chain-fields">
-              <li>source</li><li>published_at</li><li>credibility</li><li>cluster_id</li><li>market_tags</li>
+              <li>来源与时间</li><li>可信度评分</li><li>去重簇 ID</li>
             </ul>
           </article>
         </div>
@@ -1481,10 +1322,10 @@
     <section class="section workspace-section" id="workspace" aria-labelledby="workspace-title">
       <div class="section-inner">
         <header class="section-heading reveal">
+          <p class="section-number">02 / 实际终端</p>
           <h2 id="workspace-title">一套终端，两种研究节奏。</h2>
-          <p>盘中优先回答“发生了什么、影响谁、还缺什么证据”；日度复盘补齐产业链、公司画像和失效条件。</p>
+          <p>盘中先看方向与待确认点，收盘后再补齐产业、公司和建议证据。</p>
         </header>
-
         <div class="workspace-layout reveal">
           <div class="workspace-image">
             <img src="./docs/images/dashboard.png" alt="News Alpha 深色研究总览界面，包含左侧导航、事件卡片和 RSS 新闻区域" width="1425" height="990" loading="lazy">
@@ -1501,16 +1342,15 @@
     <section class="section" id="output" aria-labelledby="output-title">
       <div class="section-inner">
         <header class="section-heading reveal">
-          <span class="section-index">03 / DECISION RECORD</span>
+          <p class="section-number">03 / 建议结构</p>
           <h2 id="output-title">每条建议，都要能被证伪。</h2>
-          <p>动作只是研究记录的一部分。系统同时保存依据、时间窗口、风险和观点失效条件。</p>
+          <p>方向只是结果。真正需要被记录的是逻辑、催化、风险和什么情况下应当放弃观点。</p>
         </header>
-
         <div class="output-ledger reveal">
           <article class="output-index">
-            <h3>结构化建议记录</h3>
-            <p>买入、卖出、持有和观察都必须落在同一套字段中，便于比较、审计和历史复盘。</p>
-            <div class="recommendation-stamp"><span>RESEARCH ONLY</span><span>NO AUTO ORDER</span></div>
+            <h3>结构化研究建议</h3>
+            <p>建议由规则引擎收口，大模型只负责增强解释，不能绕过方向门槛或改写动作。</p>
+            <div class="recommendation-stamp" aria-hidden="true">可追溯</div>
           </article>
           <div class="output-fields">
             <article class="output-field"><span>ACTION</span><h4>方向与时效</h4><p>明确建议动作、有效窗口与当前置信度。</p></article>
@@ -1522,21 +1362,21 @@
       </div>
     </section>
 
-    <section class="section" id="install" aria-labelledby="install-title">
+    <section class="section install-section" id="install" aria-labelledby="install-title">
       <div class="section-inner">
         <header class="section-heading reveal">
+          <p class="section-number">04 / 本地部署</p>
           <h2 id="install-title">先在本机运行，再接入你的数据。</h2>
-          <p>默认演示链路不需要模型 API 或行情文件。真实 RSS 与 API Key 由用户在本地配置，不进入公共仓库。</p>
+          <p>首次启动不需要市场数据文件，也不要求提供模型 API。真实配置不会进入 GitHub Pages。</p>
         </header>
-
         <div class="install-layout reveal">
           <aside class="install-intro">
-            <h3>三步启动</h3>
-            <p>Python 3.10+，默认监听本机 `127.0.0.1:8000`。</p>
+            <h3>本地优先</h3>
+            <p>项目保留 Flask 原生前端和 SQLite 存储，不依赖外部前端服务。</p>
             <ul class="install-checks">
-              <li>克隆公开仓库</li>
-              <li>安装项目依赖</li>
-              <li>启动本地研究终端</li>
+              <li>Python 3.10 或更高版本</li>
+              <li>内置演示新闻可直接运行</li>
+              <li>RSS 与 API Key 由用户本地配置</li>
             </ul>
           </aside>
           <div class="install-console">
@@ -1544,35 +1384,26 @@
               <button class="install-tab" type="button" role="tab" id="install-tab-windows" data-install="windows" aria-selected="true" aria-controls="install-command" tabindex="0">Windows</button>
               <button class="install-tab" type="button" role="tab" id="install-tab-python" data-install="python" aria-selected="false" aria-controls="install-command" tabindex="-1">Python</button>
             </div>
-            <div class="command-panel" id="install-command" role="tabpanel" aria-labelledby="install-tab-windows" tabindex="0">
-              <pre id="command-text"><span class="prompt">PS&gt;</span> git clone https://github.com/wangfan36/news-event-stock-platform.git
-<span class="prompt">PS&gt;</span> cd news-event-stock-platform
-<span class="prompt">PS&gt;</span> powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
-<span class="prompt">PS&gt;</span> .\scripts\start.ps1</pre>
-              <button class="copy-button" type="button" data-copy="command-text" aria-label="复制安装命令">COPY</button>
-            </div>
-            <p class="copy-status" id="copy-status" aria-live="polite">复制按钮只读取上方公开命令。</p>
+            <div class="command-panel" id="install-command" role="tabpanel" aria-labelledby="install-tab-windows" tabindex="0"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="principles" aria-labelledby="principles-title">
+    <section class="section principles-section" id="principles" aria-labelledby="principles-title">
       <div class="section-inner">
         <header class="section-heading reveal">
-          <span class="section-index">05 / OPERATING BOUNDARIES</span>
-          <h2 id="principles-title">模型可以解释，不能替规则越权。</h2>
-          <p>News Alpha 把隐私、可解释性和人工决策放在自动化之前。</p>
+          <p class="section-number">05 / 研究边界</p>
+          <h2 id="principles-title">工具可以加速研究，不能替代判断。</h2>
+          <p>News Alpha 以证据、约束和可复现为优先，不承诺收益，也不执行交易。</p>
         </header>
-
         <div class="principles-grid reveal">
-          <article class="principle"><span class="principle-no">01</span><h3>本地优先</h3><p>RSS 配置、API Key、SQLite 历史和个人研究笔记默认留在用户机器。</p></article>
-          <article class="principle"><span class="principle-no">02</span><h3>规则定方向</h3><p>模型可以补充和润色结构化文本，但不能改变规则引擎给出的动作方向。</p></article>
-          <article class="principle"><span class="principle-no">03</span><h3>证据可追溯</h3><p>建议必须能回到新闻、事件、产业链和公司四层依据。</p></article>
-          <article class="principle"><span class="principle-no">04</span><h3>不自动下单</h3><p>产品目前是研究辅助工具，不连接券商、不管理真实仓位，也不承诺收益。最终决策始终由用户承担。</p></article>
-          <article class="principle"><span class="principle-no">05</span><h3>密钥不入库</h3><p>项目提供环境变量和本地配置入口，并在 CI 中运行敏感信息扫描。</p></article>
+          <article class="principle"><strong>壹</strong><h3>数据留在本机</h3><p>RSS 配置、历史观点和模型密钥不发布到展示页。</p></article>
+          <article class="principle"><strong>贰</strong><h3>规则决定方向</h3><p>模型用于解释和补全，不能越过评分与置信度门槛。</p></article>
+          <article class="principle"><strong>叁</strong><h3>保留证据链</h3><p>新闻、事件、产业、公司和建议均可反向追溯。</p></article>
+          <article class="principle"><strong>肆</strong><h3>不连接券商</h3><p>一期只生成研究建议，不自动下单、不管理真实仓位。</p></article>
+          <article class="principle"><strong>伍</strong><h3>不构成投资建议</h3><p>页面与软件仅用于信息整理、研究辅助和技术演示。</p></article>
         </div>
-        <p class="disclaimer">页面中的事件和界面内容用于说明产品结构，不代表实时行情、实时建议或未来收益。本项目不构成投资建议。</p>
       </div>
     </section>
 
@@ -1581,75 +1412,69 @@
         <div class="license-code">SOURCE-AVAILABLE<br>NONCOMMERCIAL</div>
         <div class="license-copy">
           <h2 id="license-title">个人研究可以使用，商业用途需要书面授权。</h2>
-          <p>当前版本采用 PolyForm Noncommercial License 1.0.0；历史 MIT 版本边界见完整授权说明。</p>
+          <p>项目采用 PolyForm Noncommercial License 1.0.0。具体边界以仓库中的许可证和中英文授权说明为准。</p>
         </div>
-        <a class="button button-secondary" href="https://github.com/wangfan36/news-event-stock-platform/blob/main/LICENSING.zh-CN.md">查看许可</a>
+        <a class="button button-secondary" href="https://github.com/wangfan36/news-event-stock-platform/blob/main/LICENSING.zh-CN.md">查看授权说明</a>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>News Alpha v1.1 · © <span id="current-year">2026</span> wangfan36</span>
+      <span>© <span id="year"></span> News Alpha · v1.1 · 仅供研究与软件演示</span>
       <div class="footer-links">
         <a href="https://github.com/wangfan36/news-event-stock-platform">GitHub</a>
-        <a href="https://github.com/wangfan36/news-event-stock-platform/blob/main/README.zh-CN.md">中文文档</a>
+        <a href="https://github.com/wangfan36/news-event-stock-platform/tree/main/docs">文档</a>
         <a href="https://github.com/wangfan36/news-event-stock-platform/issues">问题反馈</a>
       </div>
     </div>
   </footer>
 
-  <noscript>
-    <p style="margin:0;padding:14px;text-align:center;color:#081113;background:#5bc9b3;">JavaScript 已关闭：核心介绍、截图、安装说明和链接仍然可用，交互切换与复制功能不会运行。</p>
-  </noscript>
-
   <script>
-    document.documentElement.classList.add("js");
-
     (() => {
-      "use strict";
-
       const chainData = {
         news: {
           label: "NewsItem / intake",
           title: "先判断这是不是同一件事，以及信息是否可信。",
           copy: "系统对 RSS/Atom 新闻做标准化、URL 去重、标题聚类、地区和市场标记，并保留原始来源与发布时间。",
-          fields: ["source", "published_at", "credibility", "cluster_id", "market_tags"]
+          fields: ["来源与时间", "可信度评分", "去重簇 ID"]
         },
         event: {
           label: "EventCase / scenario",
           title: "把热点抽象成事件，再写出可能怎样演化。",
-          copy: "事件对象记录当前阶段、基准/乐观/悲观路径、关键催化剂、观察点、影响时长和观点失效条件。",
-          fields: ["event_type", "stage", "scenario_paths", "catalysts", "invalidation"]
+          copy: "规则模板约束事件类型、阶段、影响方向和时间窗口，模型可补充情景解释，但不能修改规则确定的动作方向。",
+          fields: ["基准/乐观/悲观路径", "关键催化剂", "失效条件"]
         },
         industry: {
           label: "IndustryImpact / transmission",
-          title: "区分直接受益、间接受益、受损和待观察。",
-          copy: "系统把事件映射到多个行业和产业链节点，并分析集中度、价值贡献、利润弹性、供需与政策依赖。",
-          fields: ["direction", "strength", "chain_node", "margin", "evidence"]
+          title: "判断影响会落在哪个产业环节，而不是停留在主题标签。",
+          copy: "事件可一对多映射到行业、主题与产业链节点，并区分直接受益、间接受益、受损及待验证关系。",
+          fields: ["上中下游", "利润与供需弹性", "证据链"]
         },
         company: {
           label: "CompanyProfile / mapping",
-          title: "主题相关不等于业绩相关，候选公司必须分层。",
-          copy: "公司被标记为龙头、次龙头、弹性标的、主题映射或弱相关，并结合主营构成、估值与历史事件敏感度。",
-          fields: ["market", "symbol", "chain_role", "earnings_beta", "valuation"]
+          title: "从产业节点召回公司，再剔除只有概念、缺少业务证据的标的。",
+          copy: "A 股和港股使用统一公司画像，结合主营构成、产业位置、事件敏感度、技术面与可选本地财务数据。",
+          fields: ["龙头与弹性", "业务相关度", "历史敏感度"]
         },
         decision: {
-          label: "StockRecommendation / record",
-          title: "建议必须同时写出理由、风险和放弃观点的条件。",
-          copy: "规则汇总事件强度、产业位置、公司弹性、催化与风险，模型只能增强解释，不能改变动作方向。",
-          fields: ["action", "rationale", "target_space", "confidence", "valid_until"]
+          label: "StockRecommendation / constrained",
+          title: "方向、理由、催化、风险和失效条件必须同时出现。",
+          copy: "最终建议受规则评分、置信度和动作门槛约束，并保存对应新闻、事件、产业与公司的完整引用关系。",
+          fields: ["动作与有效期", "赔率与风险", "版本追溯"]
         }
       };
 
       const installData = {
         windows: {
           owner: "install-tab-windows",
-          html: '<span class="prompt">PS&gt;</span> git clone https://github.com/wangfan36/news-event-stock-platform.git\n<span class="prompt">PS&gt;</span> cd news-event-stock-platform\n<span class="prompt">PS&gt;</span> powershell -ExecutionPolicy Bypass -File .\\scripts\\setup.ps1\n<span class="prompt">PS&gt;</span> .\\scripts\\start.ps1'
+          html: '<span class="prompt">PS&gt;</span> git clone https://github.com/wangfan36/news-event-stock-platform.git\n<span class="prompt">PS&gt;</span> cd news-event-stock-platform\n<span class="prompt">PS&gt;</span> powershell -ExecutionPolicy Bypass -File .\\scripts\\setup.ps1\n<span class="prompt">PS&gt;</span> .\\scripts\\start.ps1',
+          text: "git clone https://github.com/wangfan36/news-event-stock-platform.git\ncd news-event-stock-platform\npowershell -ExecutionPolicy Bypass -File .\\scripts\\setup.ps1\n.\\scripts\\start.ps1"
         },
         python: {
           owner: "install-tab-python",
-          html: '<span class="prompt">$</span> git clone https://github.com/wangfan36/news-event-stock-platform.git\n<span class="prompt">$</span> cd news-event-stock-platform\n<span class="prompt">$</span> python -m venv .venv\n<span class="prompt">$</span> python -m pip install -e ".[dev]"\n<span class="prompt">$</span> python -m news_alpha.webapp'
+          html: '<span class="prompt">$</span> git clone https://github.com/wangfan36/news-event-stock-platform.git\n<span class="prompt">$</span> cd news-event-stock-platform\n<span class="prompt">$</span> python -m venv .venv\n<span class="prompt">$</span> python -m pip install -e ".[dev]"\n<span class="prompt">$</span> python -m news_alpha.webapp',
+          text: 'git clone https://github.com/wangfan36/news-event-stock-platform.git\ncd news-event-stock-platform\npython -m venv .venv\npython -m pip install -e ".[dev]"\npython -m news_alpha.webapp'
         }
       };
 
@@ -1661,108 +1486,112 @@
 
       chainButtons.forEach((button) => {
         button.addEventListener("click", () => {
-          const item = chainData[button.dataset.chain];
-          if (!item) return;
-          chainButtons.forEach((candidate) => candidate.setAttribute("aria-pressed", String(candidate === button)));
-          chainLabel.textContent = item.label;
-          chainTitle.textContent = item.title;
-          chainCopy.textContent = item.copy;
-          chainFields.replaceChildren(...item.fields.map((field) => {
-            const entry = document.createElement("li");
-            entry.textContent = field;
-            return entry;
+          const selected = chainData[button.dataset.chain];
+          chainButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+          chainLabel.textContent = selected.label;
+          chainTitle.textContent = selected.title;
+          chainCopy.textContent = selected.copy;
+          chainFields.replaceChildren(...selected.fields.map((field) => {
+            const item = document.createElement("li");
+            item.textContent = field;
+            return item;
           }));
         });
       });
 
-      const installTabs = Array.from(document.querySelectorAll('[role="tab"][data-install]'));
+      const installTabs = Array.from(document.querySelectorAll("[data-install]"));
       const commandPanel = document.getElementById("install-command");
-      const commandText = document.getElementById("command-text");
+      let activeInstall = "windows";
 
-      function renderInstall(tab, moveFocus = false) {
-        const item = installData[tab.dataset.install];
-        if (!item || !commandText) return;
-        installTabs.forEach((candidate) => {
-          const selected = candidate === tab;
-          candidate.setAttribute("aria-selected", String(selected));
-          candidate.tabIndex = selected ? 0 : -1;
+      function renderInstall(name) {
+        activeInstall = name;
+        const selected = installData[name];
+        installTabs.forEach((tab) => {
+          const active = tab.dataset.install === name;
+          tab.setAttribute("aria-selected", String(active));
+          tab.tabIndex = active ? 0 : -1;
         });
-        commandPanel.setAttribute("aria-labelledby", item.owner);
-        commandText.innerHTML = item.html;
-        if (moveFocus) tab.focus();
+        commandPanel.setAttribute("aria-labelledby", selected.owner);
+        commandPanel.innerHTML = selected.html;
+        const copyButton = document.createElement("button");
+        copyButton.className = "copy-button";
+        copyButton.type = "button";
+        copyButton.textContent = "复制命令";
+        copyButton.addEventListener("click", copyCommands);
+        commandPanel.append(copyButton);
+      }
+
+      async function copyCommands() {
+        const text = installData[activeInstall].text;
+        let copied = false;
+        if (navigator.clipboard && window.isSecureContext) {
+          try {
+            await navigator.clipboard.writeText(text);
+            copied = true;
+          } catch (error) {
+            copied = false;
+          }
+        }
+        if (!copied) {
+          const area = document.createElement("textarea");
+          area.value = text;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.opacity = "0";
+          document.body.append(area);
+          area.select();
+          copied = document.execCommand("copy");
+          area.remove();
+        }
+        const button = commandPanel.querySelector(".copy-button");
+        button.textContent = copied ? "已复制" : "请手动复制";
+        window.setTimeout(() => { button.textContent = "复制命令"; }, 1600);
       }
 
       installTabs.forEach((tab, index) => {
-        tab.addEventListener("click", () => renderInstall(tab));
+        tab.addEventListener("click", () => renderInstall(tab.dataset.install));
         tab.addEventListener("keydown", (event) => {
-          let target = null;
-          if (event.key === "ArrowRight" || event.key === "ArrowDown") target = installTabs[(index + 1) % installTabs.length];
-          if (event.key === "ArrowLeft" || event.key === "ArrowUp") target = installTabs[(index - 1 + installTabs.length) % installTabs.length];
-          if (event.key === "Home") target = installTabs[0];
-          if (event.key === "End") target = installTabs[installTabs.length - 1];
-          if (target) {
-            event.preventDefault();
-            renderInstall(target, true);
-          }
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+          event.preventDefault();
+          const direction = event.key === "ArrowRight" ? 1 : -1;
+          const next = installTabs[(index + direction + installTabs.length) % installTabs.length];
+          next.focus();
+          renderInstall(next.dataset.install);
         });
       });
+      renderInstall(activeInstall);
 
-      const copyButton = document.querySelector("[data-copy]");
-      const copyStatus = document.getElementById("copy-status");
-      if (copyButton) {
-        copyButton.addEventListener("click", async () => {
-          const source = document.getElementById(copyButton.dataset.copy);
-          if (!source) return;
-          const text = source.textContent.trim();
-          try {
-            if (!navigator.clipboard) throw new Error("Clipboard unavailable");
-            await navigator.clipboard.writeText(text);
-            copyButton.textContent = "DONE";
-            copyStatus.textContent = "安装命令已复制。";
-          } catch (_) {
-            const selection = window.getSelection();
-            const range = document.createRange();
-            range.selectNodeContents(source);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            copyStatus.textContent = "命令已选中，请按 Ctrl+C 复制。";
-          }
-        });
-      }
-
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const revealItems = Array.from(document.querySelectorAll(".reveal"));
-      if (!reduceMotion && "IntersectionObserver" in window) {
+      if ("IntersectionObserver" in window) {
         const revealObserver = new IntersectionObserver((entries, observer) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              observer.unobserve(entry.target);
-            }
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
           });
-        }, { threshold: 0.12 });
+        }, { threshold: 0.08 });
         revealItems.forEach((item) => revealObserver.observe(item));
       } else {
         revealItems.forEach((item) => item.classList.add("is-visible"));
       }
 
-      const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+      const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
       const sections = navLinks.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
       if ("IntersectionObserver" in window) {
-        const sectionObserver = new IntersectionObserver((entries) => {
-          const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-          if (!visible) return;
-          navLinks.forEach((link) => {
-            const current = link.getAttribute("href") === `#${visible.target.id}`;
-            if (current) link.setAttribute("aria-current", "location");
-            else link.removeAttribute("aria-current");
+        const navObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            navLinks.forEach((link) => {
+              const active = link.getAttribute("href") === `#${entry.target.id}`;
+              if (active) link.setAttribute("aria-current", "true");
+              else link.removeAttribute("aria-current");
+            });
           });
-        }, { rootMargin: "-20% 0px -65%", threshold: [0.05, 0.3] });
-        sections.forEach((section) => sectionObserver.observe(section));
+        }, { rootMargin: "-30% 0px -60% 0px" });
+        sections.forEach((section) => navObserver.observe(section));
       }
 
-      const year = document.getElementById("current-year");
-      if (year) year.textContent = String(new Date().getFullYear());
+      document.getElementById("year").textContent = new Date().getFullYear();
     })();
   </script>
 </body>
